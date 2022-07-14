@@ -4,16 +4,19 @@
     "main": "index.js",
     "license": "MIT",
     "dependencies": {
+        "axios": "^0.27.2",
         "body-parser": "^1.18.2",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.1",
         "express": "^4.16.2",
-        "mongoose": "^4.13.6",
-        "morgan": "^1.9.0"
+        "path": "^0.12.7"
     },
     "scripts": {
         "start": "node server.js",
         "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
     },
     "engines": {
-        "node": "v14.15.0"
+        "node": "v14.15.0",
+        "npm": "6.14.8"
     }
 }

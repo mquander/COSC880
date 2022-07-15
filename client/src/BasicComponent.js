@@ -23,7 +23,7 @@ var cryptoToSearch, indexToSearch, fromDate, toDate;
     console.log("in BasicComp componentDidMount " + new Date());
     // GET request to the URL and set state to the data returned
     console.log("API_URL: " + process.env.REACT_APP_API_URL)
-    axios.get(process.env.REACT_APP_API_URL, {params:{selectedCrypto: cryptoToSearch, selectedIndex: indexToSearch, from: fromDate, to: toDate}}).then(res => {
+    axios.get("/data", {params:{selectedCrypto: cryptoToSearch, selectedIndex: indexToSearch, from: fromDate, to: toDate}}).then(res => {
       
       if(res.status === 200){ 
         const returnData = res.data;

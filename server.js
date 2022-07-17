@@ -141,14 +141,10 @@ function filterIndexforURL(index){
             indexURL = "https://api.polygon.io/v2/aggs/ticker/XLF/range/1/day/"+fromISO+"/"+toISO+"?adjusted=false&sort=asc&limit=1200&apiKey="+process.env.index_api_key;
             break;
         case 'oil':
-            //convertDate(from, to);
             indexURL = "https://data.nasdaq.com/api/v3/datasets/OPEC/ORB.json?start_date="+fromISO+"&end_date="+toISO+"&collapse=daily&api_key="+process.env.oil_api_key;
             // or indexURL = "https://api.polygon.io/v2/aggs/ticker/VDE/range/1/day/"+fromISO+"/"+toISO+"?adjusted=false&sort=asc&limit=1200&apiKey="+process.env.index_api_key;
-            //convertDateReverse(from, to);
-            //https://data.nasdaq.com/api/v3/datasets/OPEC/ORB.json?start_date=2022-01-01&end_date=2022-03-01&collapse=daily&api_key=pyLgsJKfbPBFxP_Ws_x8
             break;
         case 'consumercyclicals':
-            console.log("..in consumercyclicals switch..")
             indexURL = "https://api.polygon.io/v2/aggs/ticker/VCR/range/1/day/"+fromISO+"/"+toISO+"?adjusted=false&sort=asc&limit=1200&apiKey="+process.env.index_api_key;
             break;
         case 'healthcare':

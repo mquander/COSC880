@@ -2,7 +2,7 @@ import './App.css';
 import BasicComponent from './BasicComponent';
 import React from 'react';
 import IndexComponent from './IndexComponent';
-
+import GraphComponent from './GraphComponent';
 
 export default class App extends React.Component {
   constructor(props){
@@ -31,12 +31,11 @@ export default class App extends React.Component {
   }
   fromDateChange(event) {    
     
-    this.setState({fromDate: event.target.value}, () => {this.disableWeekendDate(); this.disableHolidays()}); // , () => {console.log("in fromDateChange, from: "+ this.state.fromDate)}
-    
+    this.setState({fromDate: event.target.value}, () => {this.disableWeekendDate(); this.disableHolidays()});
     this.setState({viewForm: false});
   }
   toDateChange(event) {    
-    this.setState({toDate: event.target.value}, () => {this.dateValidate(); this.disableWeekendDate(); this.disableHolidays()});  //
+    this.setState({toDate: event.target.value}, () => {this.dateValidate(); this.disableWeekendDate(); this.disableHolidays()});
     this.setState({viewForm: false});
   }
   handleSubmit(event) {    
@@ -114,17 +113,9 @@ export default class App extends React.Component {
   }
   displayData(){
     // if(this.state.cryptoInput !== '' && this.state.indexInput !== '' && this.state.fromDate !== '' && this.state.toDate !== ''){
-       this.setState({viewForm: true}, () => {
-            console.log("viewForm: "+this.state.viewForm+" cryptoInput: "+this.state.cryptoInput+" indexInput: "+this.state.indexInput+" fromDate: "+this.state.fromDate+" toDate: "+this.state.toDate)
-        });
-    // }else{
-    //   this.setState({viewForm: false});
-    // }
-    // this.cryptoChange();
-    // this.indexChange();
-    // this.fromDateChange();
-    // this.toDateChange();
-    
+    this.setState({viewForm: true}, () => {
+        console.log("viewForm: "+this.state.viewForm+" cryptoInput: "+this.state.cryptoInput+" indexInput: "+this.state.indexInput+" fromDate: "+this.state.fromDate+" toDate: "+this.state.toDate)
+    });    
   }
 
   render(){
@@ -132,49 +123,31 @@ export default class App extends React.Component {
     var componentRender = null;
     if(this.state.viewForm){
       componentRender = (<div><BasicComponent arg={this.state.cryptoInput} arg2={this.state.indexInput} arg3={this.state.fromDate} arg4={this.state.toDate}/></div>);
+    }else{
+      componentRender = (<div><GraphComponent/></div>)
     }
     return (
     <div className="App">
       <header className="App-header">
-      <div><IndexComponent/></div>  
+      <div><IndexComponent/></div>
+      
       <div style={{maxWidth: "1000px"}}>Please enter one of the following sector indexes: "technology", "finance", "oil", "consumercyclicals", "healthcare","transportation", "vix", or "treasuries"</div>  &emsp;
       <div>Please enter a recognized cryptocurrency:</div>  &emsp;
+        {/* put BasicComp/componentRender here, which contains GraphComp */}{componentRender}
         <div>
           <form onSubmit={this.handleSubmit}>
             <label>Crypto: <input type="text" value={this.state.cryptoInput} onChange={this.cryptoChange} required/></label>  &emsp;
             <label>Index: <input type="text" value={this.state.indexInput} onChange={this.indexChange} required/></label><br/><br/>
             <label>From: <input type="date" min="2021-01-01" max={new Date().toISOString().slice(0, 10)} value={this.state.fromDate} onChange={this.fromDateChange} required/></label> &emsp;
             <label>To: <input type="date" min="2021-01-01" max={new Date().toISOString().slice(0, 10)} value={this.state.toDate} onChange={this.toDateChange} required/></label><br/><br/>
-
-          {/*  <input type="submit" value="Submit" onClick={() => {this.displayData();}}/>*/}
-            <button onClick={() => {this.validateData()? this.displayData(): this.setState({viewForm: false})}}>Submit2</button> &emsp;
-            <button onClick={() => {this.clear()}}>Clear</button>
-            {componentRender}
-          {/* <div>{this.state.viewForm? <BasicComponent arg={this.state.cryptoInput} arg2={this.state.indexInput}/>:''}  </div> */}
-          </form>
-   
-          {/* <form >
-          <label for="crypto">Choose a Cryptocurrency:</label>
-          <input type="text" id="crypto2" name="crypto2"/><br></br>
           
-                  <button type="submit" onClick={() => {this.displayData(); console.log(crypto2); process.exit(); this.updateVariable(crypto)}}>Get Data</button>
- 
-          </form> */}
-        
-        
-            {/*
+          {/*  <input type="submit" value="Submit" onClick={() => {this.displayData();}}/>*/}
+            <button onClick={() => {this.validateData()? this.displayData(): this.setState({viewForm: false})}}>Submit</button> &emsp;
+            <button onClick={() => {this.clear()}}>Clear</button>
             
-
-              <label for="index">Choose a Sector Index:</label>
-
-              <select name1="index" id="index">
-                <option value2="technology">Technology</option>
-                <option value2="finance">Finance</option>
-                <option value2="oil">Oil</option>
-              </select>
-              
-              <button type="submit" onClick={() => returnData}>Submit</button>
-            </form>*/}
+          {/* <div>{this.state.viewForm? <BasicComponent arg={this.state.cryptoInput} arg2={this.state.indexInput}/>:''}  </div> */}
+          </form>    
+        
         </div>
       </header>
     </div>

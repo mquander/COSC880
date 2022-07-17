@@ -1,10 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 import gif from './big-blue-button-loading.gif'; // from https://tenor.com/view/big-blue-button-loading-meeting-waiting-typing-gif-17116389
+import GraphComponent from './GraphComponent';
+
+
 var cryptoToSearch, indexToSearch, fromDate, toDate;
 
-
- export default class BasicComponent extends React.Component {
+export default class BasicComponent extends React.Component {
   
   constructor(props) {
     console.log("in BasicComp constructor");
@@ -12,7 +14,6 @@ var cryptoToSearch, indexToSearch, fromDate, toDate;
       // declare the initial state
       this.state = {
         returnData: {}, errorReturn: 0, tempArray1: [], tempArray2: [], corrCoef:0
-       // cryptoToSearch: ''
       };
   }
   componentDidMount() {
@@ -22,9 +23,8 @@ var cryptoToSearch, indexToSearch, fromDate, toDate;
     toDate = this.props.arg4;
     console.log("in BasicComp componentDidMount " + new Date());
     // GET request to the URL and set state to the data returned
-    console.log("API_URL: " + process.env.REACT_APP_API_URL)
     axios.get("/data", {params:{selectedCrypto: cryptoToSearch, selectedIndex: indexToSearch, from: fromDate, to: toDate}}).then(res => {
-      
+
       if(res.status === 200){ 
         const returnData = res.data;
         this.setState({returnData: returnData});
@@ -49,21 +49,24 @@ var cryptoToSearch, indexToSearch, fromDate, toDate;
   
   render(){
     console.log("in BasicComp render " + new Date());
-    
-    /* will need another component to plug data into graph and display*/
+    // 
     if(this.state.errorReturn){ console.log("error: "+this.state.errorReturn.data.text)
-      return(<div style={{color:"red"}}><i>{this.state.errorReturn.data.text}</i></div>)
+      return(<div><GraphComponent/><div style={{color:"red"}}><i>{this.state.errorReturn.data.text}</i></div></div>) //render blank Graph & error message
     }else{
-      return (
-    <div> Correlation Coefficient: {this.state.corrCoef?this.state.corrCoef:<img src={gif} alt="" width="130px" height="50px"></img>} 
-      <div>{this.state.tempArray1.map((a, i) => 
-          <p key={i}>{a[1]}</p>
-      )}</div>
-    <div>{this.state.tempArray2.map((a, i) => 
-          <p key={i}>{a[1]}</p>
-      )}</div>
+      if(this.state.corrCoef === 0){// render blank initially
+        return(<GraphComponent/>);
+      }
+      else{
+        return (
+    <div>
+      <div ><GraphComponent cryptoArray={this.state.tempArray1} indexArray={this.state.tempArray2}/></div>
+      Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
+      {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}  &emsp;
+      
     </div> 
       )
+      }
+      
     }
     
   };

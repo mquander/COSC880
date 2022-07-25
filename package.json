@@ -5,11 +5,12 @@
     "license": "MIT",
     "dependencies": {
         "axios": "^0.27.2",
-        "body-parser": "^1.18.2",
         "cors": "^2.8.5",
         "dotenv": "^16.0.1",
         "express": "^4.16.2",
-        "path": "^0.12.7"
+        "mongodb": "^4.8.0",
+        "path": "^0.12.7",
+        "simple-statistics": "^7.7.5"
     },
     "scripts": {
         "start": "node server.js",

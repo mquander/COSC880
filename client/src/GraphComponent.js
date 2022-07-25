@@ -10,33 +10,77 @@ export default class GraphComponent extends React.Component{
         console.log("in GraphComp constructor");
           super(props);
           // declare the initial state
-          this.state = {
-            cryptoArray: [], indexArray: []
-          };
+          // this.state = {
+          //   cryptoArray: [], indexArray: [], displayRaw: true, displayScaled: false
+          // };
     }
 
-    componentDidMount(){
-        this.setState({cryptoArray : this.props.cryptoArray});
-        this.setState({indexArray : this.props.indexArray});
-    }
+    // componentDidMount(){console.log("in componentDidMount GraphComp")
+        
+    //       this.setState({cryptoArray : this.props.cryptoArray});
+    //       this.setState({indexArray : this.props.indexArray});
+        
+    // }
+    // shouldComponentUpdate(nextprops){console.log("in shouldComponentUpdate GraphComp")
+        
+    //     if(nextprops.cryptoArray !== this.props.cryptoArray || nextprops.indexArray !== this.props.indexArray){
+    //       this.setState({cryptoArray : nextprops.cryptoArray});
+    //       this.setState({indexArray : nextprops.indexArray});
+    //       this.setState({displayRaw : !this.props.displayRaw});
+    //       this.setState({displayScaled : !this.props.displayScaled});
+    //       return true;
+    //     }
+          
+    //     else
+    //       return false;
+    // }
     render(){
+      
         const options = {
             theme: "dark2",
             title: {
                 text: "Crypto-Index Chart"
             },      
             charts: [{
-              data: [{
-                type: "line",
+              
+              data: [
+                {
+                type: "line", showInLegend: true, name: "series1", legendText: "Crypto",
+                dataPoints: [
+                    // { x: new Date("2018-01-01"), y: 71 }
+                    
+                ]
+                }, {
+                type: "line", showInLegend: true, name: "series2", legendText: "Index",
                 dataPoints: [
                     // { x: new Date("2018-01-01"), y: 71 }
                 ]
-             }, {
+                },
+                {
                 type: "line",
                 dataPoints: [
-                    // { x: new Date("2018-01-01"), y: 71 }
+                    // { x: new Date("2018-01-01"), y: 71 } - LinReg line
+                    // { x: new Date("2022-05-03"), y: 100 },
+                    // { x: new Date("2022-07-08"), y: 56.52924114383896 }
                 ]
-             }]
+                }],
+             axisX: {
+              title: "Date",
+              crosshair: {
+                enabled: true,
+                snapToDataPoint: true,
+                valueFormatString: "MMM DD YYYY"
+              }
+            },
+            axisY: {
+              title: "Price",
+              //prefix: "$",
+              crosshair: {
+                enabled: true,
+                snapToDataPoint: true,
+                valueFormatString: "#,###.##"
+              }
+            }
           }],
           navigator: {
             slider: {
@@ -51,32 +95,106 @@ export default class GraphComponent extends React.Component{
           height: "350px",
           margin: "auto"
         };
-        if(typeof this.state.cryptoArray === "undefined"){ 
-            console.log("1st if cryptoArray: "+this.state.cryptoArray)
+        if(typeof this.props.display === "undefined"){ //(typeof this.props.cryptoArray === "undefined" ||  this.props.cryptoArray === null) && (typeof this.props.indexArray === "undefined" ||  this.props.indexArray === null)
+            console.log("1st if, display = undefined: "+this.props.display)
             
-        }else if(this.state.cryptoArray.length === 0){
-            console.log("2nd if cryptoArray: "+this.state.cryptoArray)
+        //}else if(this.props.cryptoArray.length === 0 || this.props.indexArray.length ===0){
+            //console.log("2nd if, cryptoArray.length === 0: "+this.props.cryptoArray)
         }else{
-            console.log("else cryptoArray: "+this.state.cryptoArray)
+            console.log("else cryptoArray: "+this.props.cryptoArray)
             
-            for(var i=0; i < this.state.cryptoArray.length; i++){
-                options.charts[0].data[0].dataPoints.push({x: new Date(this.state.cryptoArray[i][0]), y: this.state.cryptoArray[i][1]})
-                options.charts[0].data[1].dataPoints.push({x: new Date(this.state.indexArray[i][0]), y: this.state.indexArray[i][1]})
-            }
-            console.log("options.charts[0].data[0].dataPoints[0]: "+options.charts[0].data[0].dataPoints[0].x)
-            console.log("options.charts[0].data[1].dataPoints[0]: "+options.charts[0].data[1].dataPoints[0].y)
-            // this.state.cryptoArray.map((a, i) => (console.log({x: a[i][0], y: a[i][1]})
-            //     options.charts.data.dataPoints.push({x: a[i][0], y: a[i][1]})
-            //     options.charts[0].data[0].dataPoints.push({x: a[i][0], y: a[i][1]})
-            // ))
-            options.navigator.slider.minimum = new Date(this.state.cryptoArray[0][0])
-            options.navigator.slider.maximum = new Date(this.state.cryptoArray[this.state.cryptoArray.length-1][0])
-            console.log(options.navigator.slider.minimum)
+            if(this.props.display === 'displayRaw'){
 
+              for(var i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]}); 
+                options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexArray[i][1]})
+              }
+              options.navigator.slider.minimum = new Date(this.props.cryptoArray[0][0])
+              options.navigator.slider.maximum = new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0])
+
+            }else if(this.props.display === 'displayScaled'){
+
+              for( i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]}); 
+                options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexArray[i][1]})
+              }
+              options.navigator.slider.minimum = new Date(this.props.cryptoArray[0][0])
+              options.navigator.slider.maximum = new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0])
+
+            }else if(this.props.display === 'displayCryptoLR'){
+
+              for( i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]}); 
+                //options.charts[0].data[1].dataPoints.push({x: new Date(this.props.coinRegLine[i][0]), y: this.props.coinRegLine[i][1]})
+              }
+              options.charts[0].data[1].dataPoints.push({x: new Date(this.props.cryptoArray[0][0]), y: this.props.coinRegLine.b});
+              options.charts[0].data[1].dataPoints.push({x: new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0]), y: (this.props.coinRegLine.m *((this.props.cryptoArray.length-1)) + this.props.coinRegLine.b)});
+              options.charts[0].data[1].legendText = "Regression Line"
+              options.charts[0].data[1].color = 'red'
+
+              options.navigator.slider.minimum = new Date(this.props.cryptoArray[0][0])
+              options.navigator.slider.maximum = new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0])
+
+            }else if(this.props.display === 'displayIndexLR'){
+
+              for( i=0; i < this.props.indexArray.length; i++){ //populate the chart
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexArray[i][1]}); 
+                //options.charts[0].data[1].dataPoints.push({x: new Date(this.props.coinRegLine[i][0]), y: this.props.coinRegLine[i][1]})
+              }
+              options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[0][0]), y: this.props.indexRegLine.b});
+              options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[this.props.indexArray.length-1][0]), y: (this.props.indexRegLine.m *((this.props.indexArray.length-1)) + this.props.indexRegLine.b)});
+              
+              options.charts[0].data[0].legendText = "Index"
+              options.charts[0].data[1].legendText = "Regression Line"
+              options.charts[0].data[1].color = 'red'
+
+              options.navigator.slider.minimum = new Date(this.props.indexArray[0][0])
+              options.navigator.slider.maximum = new Date(this.props.indexArray[this.props.indexArray.length-1][0])
+
+            }else if(this.props.display === 'displayCryptoEMA'){
+
+              for( i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]});
+                options.charts[0].data[1].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.coinEMA[i]});
+              }
+              options.charts[0].data[1].legendText = "Crypto EMA"
+              options.charts[0].data[1].color = 'red'
+
+              options.navigator.slider.minimum = new Date(this.props.cryptoArray[0][0])
+              options.navigator.slider.maximum = new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0])
+
+            }else if(this.props.display === 'displayIndexEMA'){
+
+              for( i=0; i < this.props.indexArray.length; i++){ //populate the chart
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexArray[i][1]});
+                options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexEMA[i]});
+              }
+              options.charts[0].data[0].legendText = "Index"
+              options.charts[0].data[1].legendText = "Index EMA"
+              options.charts[0].data[1].color = 'red'
+              
+              options.navigator.slider.minimum = new Date(this.props.indexArray[0][0])
+              options.navigator.slider.maximum = new Date(this.props.indexArray[this.props.indexArray.length-1][0])
+
+            }
+            // for(var i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
+            //     options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]}); 
+            //     options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexArray[i][1]})
+            // }
+            // below for regression line
+            //options.charts[0].data[2].dataPoints.push({x: new Date(this.props.cryptoArray[0][0]), y: this.props.coinRegLine.b});
+            //options.charts[0].data[2].dataPoints.push({x: new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0]), y: (this.props.coinRegLine.m *((this.props.cryptoArray.length-1)) + this.props.coinRegLine.b)});
+            
+            // if(this.props.cryptoArray[0][1] === 100){ //if data is scaled
+            //   options.charts[0].data[2].dataPoints.push({x: new Date(this.props.cryptoArray[0][0]), y: this.props.scaledCoinRegLine.b});
+            //   options.charts[0].data[2].dataPoints.push({x: new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0]), y: (this.props.scaledCoinRegLine.m *((this.props.cryptoArray.length-1)) + this.props.scaledCoinRegLine.b)});
+            // }
+            
+            
         }
         
         return (
-            <div>
+            <div style={{border: "1px solid white"}}>
               <CanvasJSStockChart
                 options={options}
                 containerProps = {containerProps}

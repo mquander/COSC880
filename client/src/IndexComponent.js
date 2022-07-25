@@ -28,7 +28,9 @@ export default class IndexComponent extends React.Component {
             if(prevClose1 > this.state.responseOne){
 
             }
-        }));
+        })).catch(error => {
+          console.log(error);
+        });
     }
 
     render(){

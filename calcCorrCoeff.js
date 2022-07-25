@@ -35,10 +35,10 @@ function correlationCoefficient(X2d, Y2d, n){
 
 // Last Observation Carried Forward
 function LOCF(arr1, arr2){
-  
+  //console.log(arr1); console.log(arr2);
   for(var i = 0, j=0; i < arr1.length; i++, j++){
       
-      if(arr1[i][0] != arr2[j][0]){ //5/28 != 5/31 
+      if(arr1[i][0] != arr2[j][0]){ 
           arr2.splice(j, 0, [arr1[i][0], arr2[j-1][1]]); // insert
           //console.log("inserted " + [arr1[i][0], arr2[j-1][1]])
       }
@@ -51,5 +51,22 @@ function LOCF(arr1, arr2){
   }
 }
 
-var exportObjects = {correlationCoefficient, LOCF}
+function calculateEMA(dataRaw, time_period) {
+    var data = []
+    dataRaw.forEach(element => {
+      data.push(element[1])
+    })
+    const k = 2/(time_period + 1)
+    var emaData = []
+    emaData[0] = data[0]
+
+    for (var i = 1; i < data.length; i++) {
+        var newPoint = (data[i] * k) + (emaData[i-1] * (1-k))
+        emaData.push(newPoint)
+    }
+    //var currentEma = [...emaData].pop()
+    return emaData//+currentEma.toFixed(2)
+  }
+
+var exportObjects = {correlationCoefficient, LOCF, calculateEMA}
 module.exports = exportObjects;

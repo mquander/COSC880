@@ -1,6 +1,9 @@
 const exportObjects = require("./calcCorrCoeff.js");
+var ss = require('simple-statistics')
+const {MongoClient} = require('mongodb');
 const express = require('express');
 const app = express();
+//const body = require('body-parser');
 const axios = require('axios');
 const cors = require('cors');
 app.use(cors());
@@ -13,11 +16,14 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 const PORT = process.env.PORT || 5000;
 
 var indexURL, cryptoURL;
+var mongoURL = "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test"; //  "mongodb://localhost:27017"
+// (test OR ?retryWrites=true&w=majority
 var toISO, fromISO, toSec, fromSec;
-var coinPrices = [], indexPrices = [], tempArr = [];
-var returnObj = {arr1: coinPrices, arr2: indexPrices, corrCoeff: null};
+var coinPrices = [], indexPrices = [], tempArr = [], scaledCoinPrices = [], scaledIndexPrices = [];
+var returnObj = {arr1: [], arr2: [], scaledArr1: [], scaledArr2: [], coinRegLine: {}, scaledCoinRegLine: {}, indexRegLine: {}, coinEMA: [], indexEMA: [], corrCoeff: null};
 var errorObj = {status: null, text: ''};
 app.get("/data", function(req, res1){ // may need to change this url later
+    returnObj.arr1 = []; returnObj.arr2 = []; returnObj.scaledArr1 = []; returnObj.scaledArr2 = []; returnObj.coinRegLine = {}; returnObj.indexRegLine = {}; returnObj.coinEMA = []; returnObj.indexEMA = []; returnObj.corrCoeff = null;
     
     var selectedCrypto =req.query.selectedCrypto;// 'selectedCrypto' from the front-end
     var selectedIndex = req.query.selectedIndex; // 'sectorIndex' from the front-end
@@ -47,15 +53,18 @@ app.get("/data", function(req, res1){ // may need to change this url later
         }); // convert dates to YYYY-MM-DD
         
         var prices2 = [];
+        // filter array to get last price of the day
         for(var i = 0; i < coinPrices.length-1; i++){
             if(coinPrices[i][0] != coinPrices[i+1][0]){
                 prices2.push(coinPrices[i])
-                //if(i == 0) console.log(prices[i][0]);
             }
         }
         prices2.push(coinPrices[coinPrices.length-1])
         coinPrices = prices2;
-
+        prices2 = [];
+        for(var i=0; i < coinPrices.length; i++){
+            scaledCoinPrices.push( [coinPrices[i][0], (coinPrices[i][1]/coinPrices[0][1]) * 100] );
+        }
         // if(lt90days){ // if timeline is < 90 days, filter array to get last price of the day
         //     var coinPrices2 = [];
         //     // for-loop to get the 20th price in list (last price of the day listed)
@@ -82,18 +91,48 @@ app.get("/data", function(req, res1){ // may need to change this url later
                 indexPrices.push([(new Date(element.t)).toISOString().slice(0, 10), element.c]);
             });        
         }
-        
+
+        for(var i=0; i < indexPrices.length; i++){
+            scaledIndexPrices.push( [indexPrices[i][0], (indexPrices[i][1]/indexPrices[0][1]) * 100] );
+        }
+        //prices2 = coinPrices
         returnObj.arr1 = coinPrices;
         returnObj.arr2 = indexPrices;
-        coinPrices = [], indexPrices = [];
+        returnObj.scaledArr1= scaledCoinPrices;
+        returnObj.scaledArr2= scaledIndexPrices
+        coinPrices = [], indexPrices = [], scaledCoinPrices = [], scaledIndexPrices = [];
         
         // Last Observation Carried Forward function call to sync date timeline
         const LOCF = exportObjects.LOCF;
         LOCF(returnObj.arr1, returnObj.arr2);
+        LOCF(returnObj.scaledArr1, returnObj.scaledArr2);
 
+        // *********** Linear Regression BEGIN ***************
+        //coinPrices=Array.from(returnObj.arr1); if(typeof coinPrices[0][0] === "number") process.exit();
+        var tempPricesArr=[], tempPricesArr2=[];
+        for(var i=0; i < returnObj.arr1.length; i++){
+            tempPricesArr.push([i, returnObj.arr1[i][1]]); //populate array with 0 - n and coinPrices
+            prices2.push([i, returnObj.scaledArr1[i][1]]); //populate array with 0 - n and scaledcoinPrices
+            tempPricesArr2.push([i, returnObj.arr2[i][1]]);
+        } console.log(tempPricesArr); console.log(tempPricesArr2); ;
+        
+        returnObj.coinRegLine= ss.linearRegression(tempPricesArr);
+        returnObj.scaledCoinRegLine = ss.linearRegression(prices2);
+        //indexPrices=returnObj.arr2
+        returnObj.indexRegLine= ss.linearRegression(tempPricesArr2);
+        // *********** Linear Regression END ***************
+
+        // *********** corr Coef BEGIN ***************
         const correlationCoefficient = exportObjects.correlationCoefficient;
         returnObj.corrCoeff = correlationCoefficient(returnObj.arr1, returnObj.arr2, returnObj.arr1.length);
-        
+        // *********** corr Coef END ***************
+
+        // *********** calculateEMA BEGIN ***************
+        const calculateEMA = exportObjects.calculateEMA;
+        returnObj.coinEMA = calculateEMA(tempPricesArr, tempPricesArr.length); // a 1D array that represents EMA line
+        returnObj.indexEMA = calculateEMA(tempPricesArr2, tempPricesArr2.length)
+        // *********** calculateEMA END ***************
+
         res1.statusCode = 200;
         console.log(returnObj)
         res1.json(returnObj);
@@ -126,6 +165,98 @@ app.get("/data", function(req, res1){ // may need to change this url later
         
         });
 });
+
+// server code for user login
+app.post("/login", function(req, res){
+
+    console.log(req.query)
+    const userObjInfo = { 
+        "email" : req.query.email,
+        "password" : req.query.password
+        //"hash_pw" : req.hash_pw
+    }
+    MongoClient.connect(mongoURL, function(err, db){
+        if(err) throw err;
+        var dbo = db.db("crypto-index-db");
+            dbo.collection('users').findOne({email: userObjInfo.email, password: userObjInfo.password}, {"password":0}, function(err, res2){
+                if(res2 == null){
+                    res.send("Error: user not found/invalid credentials")
+                }else if(res2.email == userObjInfo.email){
+                    res.send(res2);
+                }
+            });
+    });
+})
+
+// server code for user creation/sign-up
+app.post("/signup", function(req, res){
+    
+    if(req.query.password1 != req.query.password2)
+        res.send("Error: invalid credentials")
+
+    console.log(req.query)
+    const userObjInfo = {
+        "user_ID" : (Math.floor(Math.random() * 200) + 100).toString(), 
+        "fname" : req.query.firstName, 
+        "lname" : req.query.lastName,
+        "email" : req.query.email,
+        "password" : req.query.password,
+        "watchList" : { "cryptos" : [ ], "indexes" : [ ] }
+        //"hash_pw" : ''
+    }
+    MongoClient.connect(mongoURL, function(err, db){
+        if(err) throw err;
+        var dbo = db.db("crypto-index-db");
+            dbo.collection('users').findOne({"email": userObjInfo.email}, function(err, res2){
+
+                if(res2 == null){
+                    dbo.collection('users').insertOne(userObjInfo, function(err, res3){
+                        console.log("User " + req.query.firstName + " added");
+                    });
+                    res.status(200).send("Account created!");                    
+                }else if(res2.email == userObjInfo.email){// return 'email already in use'
+                    res.status(401).send("Error: email already in use");
+                }
+            });
+            
+    });
+})
+
+// server code for user update
+app.post("/update", function(req, res){
+    
+    const userObjInfo = {
+        "user_ID" : req.query.user_ID, //(Math.floor(Math.random() * 200) + 100).toString(), 
+        "fname" : req.query.firstName, 
+        "lname" : req.query.lastName,
+        "email" : req.query.email,
+        "password" : req.query.password,
+       // "watchList" : { "cryptos" : [req.query.watchList.cryptos], "indexes" : [req.query.watchList.indexes] }
+        watchList : JSON.parse(req.query.watchList)
+        // "watchList.indexes" : [req.query.watchList.indexes] 
+        //"hash_pw" : ''
+    }; 
+   // console.log(userObjInfo.watchList); 
+    //console.log(userObjInfo.watchList.cryptos);
+    // const newValues = { $set: {watchList: {cryptos: [req.query.watchList.cryptos], indexes: [req.query.watchList.indexes]}} }
+    var newValues = { $set: {watchList: userObjInfo.watchList} }; // console.log(newValues)
+    MongoClient.connect(mongoURL, function(err, db){
+        if(err) throw err;
+        var dbo = db.db("crypto-index-db");
+            dbo.collection('users').updateOne({user_ID : userObjInfo.user_ID}, newValues, function(err, res2){
+                console.log('updated watchlist'); console.log(res2);
+                if(res2.modifiedCount == 1){
+                    //dbo.collection('users').findOne({email: userObjInfo.email}, {"password":0}, function(err, res3){});
+                        console.log("User " + req.query.firstName + " watchlist updated");
+                    
+                    res.status(200).send("Watchlist updated!");                    
+                }else if(res2.email == userObjInfo.email){// return 'email already in use'
+                    res.status(401).send("Error: watchlist not updated");
+                }
+            });
+            
+    });
+})
 
 /* alternative APIs for stocks: 
 https://financialmodelingprep.com/api/v3/quote/AAPL?apikey=cc792fcdb265ac18f5c47974aee7e52b

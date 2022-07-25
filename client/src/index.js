@@ -13,6 +13,8 @@ root.render(
   
   //
   <div className="index">
+    <div className="App" >
+      <header className="App-header">
     <App/>
   {/* <Router>
     <NavBar/>
@@ -23,7 +25,8 @@ root.render(
       <Route path="/about" element={<About />}/>
     </Routes>
   </Router>   */}
-    
+    </header>
+    </div>
   </div>
 );
 

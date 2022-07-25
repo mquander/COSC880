@@ -62,7 +62,7 @@ export default class BasicComponent extends React.Component {
       password : this.context.user.loggedInUserData.password,
       watchList: {"cryptos": this.context.user.loggedInUserData.watchList.cryptos, "indexes": this.context.user.loggedInUserData.watchList.indexes}
     }; console.log(paramsObj);
-    axios.post("http://localhost:5000/update", {}, {params: paramsObj}).then(res => {
+    axios.post("/update", {}, {params: paramsObj}).then(res => {
       console.log("watchlist updated (from BasicComp): ")
       console.log(res)
       if(res.status < 400){

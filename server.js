@@ -17,8 +17,8 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 const PORT = process.env.PORT || 5000;
 
 var indexURL, cryptoURL;
-var mongoURL = "mongodb://localhost:27017"; //  
-//live URL: "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test"
+var mongoURL = "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test" //  "mongodb://localhost:27017";
+//live URL: 
 // (test OR ?retryWrites=true&w=majority
 var toISO, fromISO, toSec, fromSec;
 var coinPrices = [], indexPrices = [], tempArr = [], scaledCoinPrices = [], scaledIndexPrices = [];

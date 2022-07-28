@@ -1,4 +1,5 @@
 const exportObjects = require("./calcCorrCoeff.js");
+//const lstm = require("./lstm.js");
 var ss = require('simple-statistics')
 const {MongoClient} = require('mongodb');
 const express = require('express');
@@ -16,7 +17,8 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 const PORT = process.env.PORT || 5000;
 
 var indexURL, cryptoURL;
-var mongoURL = "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test"; //  "mongodb://localhost:27017"
+var mongoURL = "mongodb://localhost:27017"; //  
+//live URL: "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test"
 // (test OR ?retryWrites=true&w=majority
 var toISO, fromISO, toSec, fromSec;
 var coinPrices = [], indexPrices = [], tempArr = [], scaledCoinPrices = [], scaledIndexPrices = [];
@@ -166,6 +168,12 @@ app.get("/data", function(req, res1){ // may need to change this url later
         });
 });
 
+// route to get LSTM
+// app.get("/lstm", function(req, res){
+
+//     // call lstm
+// })
+
 // server code for user login
 app.post("/login", function(req, res){
 
@@ -244,17 +252,48 @@ app.post("/update", function(req, res){
         if(err) throw err;
         var dbo = db.db("crypto-index-db");
             dbo.collection('users').updateOne({user_ID : userObjInfo.user_ID}, newValues, function(err, res2){
-                console.log('updated watchlist'); console.log(res2);
+                
                 if(res2.modifiedCount == 1){
+                    console.log('updated watchlist'); console.log(res2);
                     //dbo.collection('users').findOne({email: userObjInfo.email}, {"password":0}, function(err, res3){});
-                        console.log("User " + req.query.firstName + " watchlist updated");
+                        console.log("User " + userObjInfo.fname + " watchlist updated");
                     
                     res.status(200).send("Watchlist updated!");                    
-                }else if(res2.email == userObjInfo.email){// return 'email already in use'
+                }else{// return 'watchlist not updated'
                     res.status(401).send("Error: watchlist not updated");
                 }
             });
             
+    });
+})
+
+// server code for deleting user
+app.post("/delete", function(req, res){
+    console.log("in server /delete")
+    console.log(req.query)
+    const userObjInfo = { 
+        "user_ID" : req.query.user_ID, 
+        "fname" : req.query.firstName, 
+        "lname" : req.query.lastName,
+        "email" : req.query.email,
+        "password" : req.query.password,
+        "watchList" : JSON.parse(req.query.watchList)
+    }
+    var deleteQuery = {user_ID: userObjInfo.user_ID, email: userObjInfo.email}
+    MongoClient.connect(mongoURL, function(err, db){
+        if(err) throw err;
+        var dbo = db.db("crypto-index-db");
+            dbo.collection('users').deleteOne(deleteQuery, function(err, res2){
+                console.log(res2);
+                if(res2.deletedCount == 1){ //
+                    
+                    console.log("User " + req.query.firstName + " deleted");
+                    res.status(200).send("user deleted"); 
+                }else{
+                    console.log("User " + userObjInfo.fname + " NOT deleted");
+                    res.status(401).send("Error: user not deleted");
+                }
+            });
     });
 })
 

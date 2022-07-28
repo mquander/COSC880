@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+.navbar {
+  position: "fixed";
+  top: 10;
+  width: "100%";
+  text-align: "left";
+  
+  /* border-style: solid;
+  border-color: "white"; */
+}
+.navbar a{
+  padding: 14px 16px;
+}

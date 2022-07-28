@@ -11,3 +11,34 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.index {
+  text-align: center;
+}
+
+.index {
+  background-color: #282c34;
+  min-height: 100vh; /* change to fix navbar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.index-link {
+  color: #61dafb;
+}
+
+.navbar {
+  position: "fixed";
+  top: 10;
+  width: "100%";
+  text-align: "left";
+  /* border-style: solid;
+  border-color: "white"; */
+}
+.navbar a{
+  padding: 14px 16px;
+}

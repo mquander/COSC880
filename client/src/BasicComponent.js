@@ -52,6 +52,7 @@ export default class BasicComponent extends React.Component {
     });
   }
   updateDB(){
+    //if(this.context.user.loggedInUserData.watchList.cryptos.includes(cryptoToSearch))
     this.context.user.loggedInUserData.watchList.cryptos.push(cryptoToSearch); 
     this.context.user.loggedInUserData.watchList.indexes.push(indexToSearch);// console.log(this.context.user.loggedInUserData); console.log(this.context.user.loggedInUserData.watchList); console.log(this.context.user.loggedInUserData.watchList.cryptos);
     var paramsObj = {
@@ -80,21 +81,44 @@ export default class BasicComponent extends React.Component {
   
   render(){BasicComponent.contextType = UserContext;
     console.log("in BasicComp render " + new Date());
-    // 
+    var buttonsRender;
     if(this.state.errorReturn){ console.log("error: "+this.state.errorReturn.data.text); console.log("graph render here: ")
       return(<div><GraphComponent/><div style={{color:"red"}}><i>{this.state.errorReturn.data.text}</i></div></div>) //render blank Graph & error message
     }else{
       if(this.state.corrCoef === -10){console.log("graph render here: ")// initial render is a blank graph - NEED TO change this to null, not 0
         return(<GraphComponent/>);
       }
-      else{ //this else executes if there's data to display
+      else{ //this else executes if there's data to display border: "1px solid red", 
+        
+
+        buttonsRender=(
+          <div > 
+          <div style={{justifyContent: "center" , alignItems: "center", display: "flex"}}>
+            
+            <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>  &nbsp;
+            <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>  &nbsp;
+            <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: true, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayCryptoLR"})}}> {cryptoToSearch}-LR </Button> &nbsp;
+            <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: true, displayCryptoEMA: false, displayIndexEMA: false, display: "displayIndexLR"})}}> {indexToSearch}-LR </Button> &nbsp;
+          </div>
+          <div style={{justifyContent: "center" , alignItems: "center", display: "flex"}}>
+            <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: true, displayIndexEMA: false, display: "displayCryptoEMA"})}}> {cryptoToSearch}-EMA </Button>  &nbsp;
+            <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button>  &nbsp;
+            {((typeof this.context.user) !== "undefined" && this.context.user.loggedIn)?
+             <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.updateDB()}}>Add to Watchlist</Button>:null}
+          </div>
+          </div>
+
+            )
+
+
         if(this.state.displayRaw){console.log("graph render here: "); console.log("this.state.tempArray1: "+this.state.tempArray1)
-          return (
+          return(
             <div>
               <div ><GraphComponent cryptoArray={this.state.tempArray1} indexArray={this.state.tempArray2} display={this.state.display}/></div>
               Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} &nbsp;
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
+              {buttonsRender}
+              {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: true, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayCryptoLR"})}}> {cryptoToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: true, displayCryptoEMA: false, displayIndexEMA: false, display: "displayIndexLR"})}}> {indexToSearch}-LR </Button>
@@ -102,7 +126,7 @@ export default class BasicComponent extends React.Component {
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button>
               {((typeof this.context.user) !== "undefined" && this.context.user.loggedIn)?
                <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.updateDB()}}>Add to Watchlist</Button>:null}
-              
+               */}
             </div> 
               )
         }else if(this.state.displayScaled){console.log(this.state.scaledArr2) ; console.log("graph render here: ")
@@ -110,13 +134,14 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent cryptoArray={this.state.scaledArr1} indexArray={this.state.scaledArr2} display={this.state.display}/></div>
               Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}  &emsp;
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {buttonsRender}
+              {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: true, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayCryptoLR"})}}> {cryptoToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: true, displayCryptoEMA: false, displayIndexEMA: false, display: "displayIndexLR"})}}> {indexToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: true, displayIndexEMA: false, display: "displayCryptoEMA"})}}> {cryptoToSearch}-EMA </Button>
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button>
+              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button> */}
             </div> 
               )
         }else if(this.state.displayCryptoLR){
@@ -124,13 +149,14 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent cryptoArray={this.state.tempArray1} coinRegLine={this.state.returnData.coinRegLine}  display={this.state.display}/></div>
               Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} &emsp;
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {buttonsRender}
+              {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: true, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayCryptoLR"})}}> {cryptoToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: true, displayCryptoEMA: false, displayIndexEMA: false, display: "displayIndexLR"})}}> {indexToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: true, displayIndexEMA: false, display: "displayCryptoEMA"})}}> {cryptoToSearch}-EMA </Button>
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button>
+              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button> */}
             </div> 
               )
         }else if(this.state.displayIndexLR){
@@ -138,13 +164,14 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent indexArray={this.state.tempArray2} indexRegLine={this.state.returnData.indexRegLine}  display={this.state.display}/></div>
               Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} &emsp;
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {buttonsRender}
+              {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: true, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayCryptoLR"})}}> {cryptoToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: true, displayCryptoEMA: false, displayIndexEMA: false, display: "displayIndexLR"})}}> {indexToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: true, displayIndexEMA: false, display: "displayCryptoEMA"})}}> {cryptoToSearch}-EMA </Button>
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button>
+              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button> */}
             </div> 
               )
         }else if(this.state.displayCryptoEMA){
@@ -152,13 +179,14 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent cryptoArray={this.state.tempArray1} coinEMA={this.state.returnData.coinEMA}  display={this.state.display}/></div>
               Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} &emsp;
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {buttonsRender}
+              {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: true, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayCryptoLR"})}}> {cryptoToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: true, displayCryptoEMA: false, displayIndexEMA: false, display: "displayIndexLR"})}}> {indexToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: true, displayIndexEMA: false, display: "displayCryptoEMA"})}}> {cryptoToSearch}-EMA </Button>
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button>
+              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button> */}
             </div> 
               )
         }else if(this.state.displayIndexEMA){console.log(this.state.returnData.indexEMA)
@@ -166,13 +194,14 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent indexArray={this.state.tempArray2} indexEMA={this.state.returnData.indexEMA}  display={this.state.display}/></div>
               Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} &emsp;
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
+              {buttonsRender}
+              {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: true, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayCryptoLR"})}}> {cryptoToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: true, displayCryptoEMA: false, displayIndexEMA: false, display: "displayIndexLR"})}}> {indexToSearch}-LR </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: true, displayIndexEMA: false, display: "displayCryptoEMA"})}}> {cryptoToSearch}-EMA </Button>
-              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button>
+              <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: true, display: "displayIndexEMA"})}}> {indexToSearch}-EMA </Button> */}
             </div> 
               )
         }

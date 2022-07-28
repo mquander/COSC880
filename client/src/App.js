@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-//import Home from './components/Home';
+import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Home, Login, SignUp, About, Profile, LogOut } from "./components/Paths"
 import NavBar from './components/NavBar';

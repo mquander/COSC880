@@ -196,15 +196,16 @@ export default class Home extends React.Component {
     <div className="App" >
       <header className="App-header">
         
-      <div ><IndexComponent/></div> {/* */}
+       <div style={{border: "1px solid white"}}><IndexComponent/></div> {/**/}
       
       <div style={{maxWidth: "1000px"}}>Please enter a recognized cryptocurrency and one of the following sector indexes: "technology", "finance", "oil", "consumercyclicals", "healthcare","transportation", "vix", or "treasuries"</div>  &emsp;
       
         {/* put BasicComp/componentRender here, which contains GraphComp */}
         <Grid  container spacing={3}>
-            <Grid item xs sx={{ alignItems: 'left', display: 'flex', justifyContent:"left"}}><Item>{<Watchlist/>}</Item></Grid>  {/* watchlistComp */}
-            <Grid item xs sx={{alignItems: 'center', justifyContent:"center"}}><Item>{componentRender}</Item></Grid>
-            <Grid item xs><Item></Item></Grid>
+            <Grid item xs sx={{ alignItems: 'left', display: 'flex', justifyContent:"left" , minWidth: 260}}><Item>{<Watchlist/>}</Item></Grid>  {/* watchlistComp */}
+            <Grid item xs sx={{alignItems: 'center', justifyContent:"center"}} elevation={3}><Item>{componentRender}</Item></Grid>
+            <Grid item xs sx={{ alignItems: 'right', display: 'flex', justifyContent:"right" , minWidth: 260}}><Item></Item></Grid>
+            {/* <Grid item xs><Item><Box sx={{ width: '100%', minWidth: 260}}></Box></Item></Grid> */}
         </Grid>
         <div>
           {/*<form onSubmit={this.handleSubmit}>
@@ -222,7 +223,7 @@ export default class Home extends React.Component {
         {/*  <input type="submit" value="Submit" onClick={() => {this.displayData();}}/>*/}
         </div>
     <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="auto">
+        <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{

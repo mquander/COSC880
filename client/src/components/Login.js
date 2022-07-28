@@ -1,9 +1,12 @@
 import React from "react";
+import '../App.css';
 import axios from 'axios';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
+// import Alert from '@mui/material/Alert';
+// import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 // import FormControlLabel from '@mui/material/FormControlLabel';
 // import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
@@ -70,6 +73,8 @@ function Login() {
       if(res.data.email === paramsObj.email){
         setUser({ loggedIn: true, loggedInUserData: res.data });
         //setLoggedInUser({loggedInUserData: res.data})
+        
+
         console.log(user);
         return navigate("/", { replace: true })
       }else{
@@ -89,11 +94,11 @@ function Login() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs"  sx={{ pt: 2, mt: 2, pb: 20, mb: 8}}>
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 18,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',

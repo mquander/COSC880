@@ -1,4 +1,5 @@
 import React from "react";
+import '../App.css';
 import axios from 'axios';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -93,7 +94,7 @@ function SignUp() {
   // }
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs" sx={{ pt: 8, pb: 6 }}>
         <CssBaseline />
         <Box
           sx={{

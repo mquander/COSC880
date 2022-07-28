@@ -6,7 +6,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 // import IconButton from '@mui/material/IconButton';
-// import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import ListItemButton from '@mui/material/ListItemButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+// import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+// import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -69,8 +74,8 @@ export default class Watchlist extends React.Component {
         <Container component="main" maxWidth="md">
             <CssBaseline />
             <Box
-            sx={{border: 1, borderColor: 'primary' ,
-                borderRadius: '16px',
+            sx={{border: 1, borderColor: 'primary' ,px: 1, 
+                borderRadius: '16px', minWidth: 260,
                 height: 'auto', width: 'auto',
                 margin: 'auto',
                 display: 'flex',
@@ -82,8 +87,8 @@ export default class Watchlist extends React.Component {
             <Typography component="h1" variant="h5">
                 Watchlist for {userData.fname}
             </Typography>
-            <Grid  container direction="row" spacing={2}>
-                {/* <Box component="form"></Box> */}
+             {/* <Grid  container direction="row" spacing={2} sx={{ py: 2, px: 1 }}>
+               
                 
                     <Grid container item xs={'auto'} sm={6}  style={{ fontSize: '18px' }}>
                         Cryptos: &emsp;
@@ -97,14 +102,72 @@ export default class Watchlist extends React.Component {
                         {userData.watchList.indexes.map((a,i) => // tempArray2
                             <li key={i}>{a}</li>
                         )}
-                        {/*userData.watchList.indexes*/} 
-                        {/* for list items: https://mui.com/material-ui/react-list/ */}
+                        {/*userData.watchList.indexes
+                         for list items: https://mui.com/material-ui/react-list/ 
                     </Grid>
-                    {/* <Grid container>
                     
-                    </Grid> */}
                 
+            </Grid> */}
+
+
+            <Box sx={{ width: '100%', minWidth: 260,  py: 0}}>
+            
+            <Grid  container direction="row" spacing={2} sx={{ py: 2, px: 1 }}>
+                <Grid  container direction="column" wrap='nowrap' item xs={'auto'} sm={6}  style={{ fontSize: '18px' }}>
+                {/* <Grid container item xs={'auto'} sm={6}  style={{ fontSize: '18px' }}> */}
+                Cryptos: &emsp;
+                    <List>
+                        
+                        {userData.watchList.cryptos.map((a,i) => 
+                                // <li key={i}><Link component="button" onClick={() => {this.props.updateCryptoInput(a)}}>{a}</Link><IconButton><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }} /></IconButton></li>
+                            <ListItem disablePadding >
+                                <ListItemButton sx={{border: 1, borderColor: 'primary', borderRadius: '16px', background: 'linear-gradient(to right bottom, #282c34, #282c34, #00695c)'}}>
+                            {/*<ListItemIcon>
+                                </ListItemIcon>*/}
+                                <ListItemText primary={a} /> 
+                                </ListItemButton>
+                            </ListItem>
+
+                            )}
+                            
+                            
+                    </List>
+                </Grid>
+                <Grid  container direction="column" wrap='nowrap' item xs={'auto'} sm={6}  style={{ fontSize: '18px' }}>
+                {/* <Grid container item xs={'auto'} sm={6}  style={{ fontSize: '18px' }}> */}
+                Indexes: &emsp;
+                    <List>
+                            {/*<ListItemIcon>
+                                <CurrencyExchangeIcon /> 
+                                </ListItemIcon>*/}
+                        {userData.watchList.indexes.map((a,i) =>  //  tempArray1
+                                // <li key={i}><Link component="button" onClick={() => {this.props.updateCryptoInput(a)}}>{a}</Link><IconButton><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }} /></IconButton></li>
+                            <ListItem disablePadding>
+                                <ListItemButton sx={{border: 1, borderColor: 'primary', borderRadius: '16px', background: 'linear-gradient(to right bottom, #282c34, #282c34, #00695c)' }}>
+
+                                <ListItemText primary={a} /> 
+                                
+                                </ListItemButton>
+                        </ListItem>
+                            )}
+                            
+                            
+                    </List>  
+                    </Grid>
             </Grid>
+            </Box>
+
+
+
+
+
+
+
+
+
+
+
+
             </Box>
         </Container>
         </ThemeProvider>

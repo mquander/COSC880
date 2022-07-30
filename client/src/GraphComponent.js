@@ -57,7 +57,7 @@ export default class GraphComponent extends React.Component{
                 ]
                 },
                 {
-                type: "line",
+                type: "line", showInLegend: true, name: "series3", legendText: "",
                 dataPoints: [
                     // { x: new Date("2018-01-01"), y: 71 } - LinReg line
                     // { x: new Date("2022-05-03"), y: 100 },
@@ -112,6 +112,9 @@ export default class GraphComponent extends React.Component{
               options.navigator.slider.minimum = new Date(this.props.cryptoArray[0][0])
               options.navigator.slider.maximum = new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0])
 
+              options.charts[0].data[0].legendText = this.props.cryptoToSearch; 
+              options.charts[0].data[1].legendText = this.props.indexToSearch;
+
             }else if(this.props.display === 'displayScaled'){
 
               for( i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
@@ -121,6 +124,9 @@ export default class GraphComponent extends React.Component{
               options.navigator.slider.minimum = new Date(this.props.cryptoArray[0][0])
               options.navigator.slider.maximum = new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0])
 
+              options.charts[0].data[0].legendText = this.props.cryptoToSearch; 
+              options.charts[0].data[1].legendText = this.props.indexToSearch;
+
             }else if(this.props.display === 'displayCryptoLR'){
 
               for( i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
@@ -129,6 +135,8 @@ export default class GraphComponent extends React.Component{
               }
               options.charts[0].data[1].dataPoints.push({x: new Date(this.props.cryptoArray[0][0]), y: this.props.coinRegLine.b});
               options.charts[0].data[1].dataPoints.push({x: new Date(this.props.cryptoArray[this.props.cryptoArray.length-1][0]), y: (this.props.coinRegLine.m *((this.props.cryptoArray.length-1)) + this.props.coinRegLine.b)});
+              
+              options.charts[0].data[0].legendText = this.props.cryptoToSearch;
               options.charts[0].data[1].legendText = "Regression Line"
               options.charts[0].data[1].color = 'red'
 
@@ -144,7 +152,7 @@ export default class GraphComponent extends React.Component{
               options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[0][0]), y: this.props.indexRegLine.b});
               options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[this.props.indexArray.length-1][0]), y: (this.props.indexRegLine.m *((this.props.indexArray.length-1)) + this.props.indexRegLine.b)});
               
-              options.charts[0].data[0].legendText = "Index"
+              options.charts[0].data[0].legendText = this.props.indexToSearch;
               options.charts[0].data[1].legendText = "Regression Line"
               options.charts[0].data[1].color = 'red'
 
@@ -157,7 +165,8 @@ export default class GraphComponent extends React.Component{
                 options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]});
                 options.charts[0].data[1].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.coinEMA[i]});
               }
-              options.charts[0].data[1].legendText = "Crypto EMA"
+              options.charts[0].data[0].legendText = this.props.cryptoToSearch;
+              options.charts[0].data[1].legendText = this.props.cryptoToSearch+" EMA"
               options.charts[0].data[1].color = 'red'
 
               options.navigator.slider.minimum = new Date(this.props.cryptoArray[0][0])
@@ -169,13 +178,34 @@ export default class GraphComponent extends React.Component{
                 options.charts[0].data[0].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexArray[i][1]});
                 options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexEMA[i]});
               }
-              options.charts[0].data[0].legendText = "Index"
-              options.charts[0].data[1].legendText = "Index EMA"
+              options.charts[0].data[0].legendText = this.props.indexToSearch;
+              options.charts[0].data[1].legendText = this.props.indexToSearch+" EMA"
               options.charts[0].data[1].color = 'red'
               
               options.navigator.slider.minimum = new Date(this.props.indexArray[0][0])
               options.navigator.slider.maximum = new Date(this.props.indexArray[this.props.indexArray.length-1][0])
 
+            }else if(this.props.display === 'displayIndexLSTM'){
+              //var j;
+              for( i=0; i < this.props.indexLSTM.timestamps_a.length; i++){ //raw data line
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.indexLSTM.timestamps_a[i]), y: this.props.indexLSTM.prices[i]});
+              }
+              for( i=0; i < this.props.indexLSTM.timestamps_b.length; i++){ //val train y data line
+                //options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexLSTM.timestamps_b[i]), }) // for SMA
+                if(i % 2 === 0){
+                  options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexLSTM.timestamps_b[i]), y: this.props.indexLSTM.val_train_y[i/2]})// for Val_train_Y
+                }
+              }
+              var timestamps_c = this.props.indexLSTM.timestamps_c.slice(this.props.indexLSTM.timestamps_c.length - this.props.indexLSTM.val_unseen_y.length, this.props.indexLSTM.timestamps_c.length - 1)
+              for( i=0; i < timestamps_c.length; i++){
+                //if(i % 2 === 0){
+                options.charts[0].data[2].dataPoints.push({x: new Date(timestamps_c[i]), y: this.props.indexLSTM.val_unseen_y[i]}) // for Val_unseen_Y
+
+                //}
+              }
+              options.charts[0].data[0].legendText= this.props.indexToSearch;
+              options.charts[0].data[1].legendText= "Predicted (training set)";
+              options.charts[0].data[2].legendText= "Predicted (test set)";
             }
             // for(var i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
             //     options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]}); 

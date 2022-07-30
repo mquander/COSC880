@@ -1,5 +1,5 @@
 const exportObjects = require("./calcCorrCoeff.js");
-//const lstm = require("./lstm.js");
+const lstm = require("./lstm.js");
 var ss = require('simple-statistics')
 const {MongoClient} = require('mongodb');
 const express = require('express');
@@ -17,15 +17,17 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 const PORT = process.env.PORT || 5000;
 
 var indexURL, cryptoURL;
-var mongoURL = "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test" //  "mongodb://localhost:27017";
+var mongoURL = "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test"; // "mongodb://localhost:27017" 
 //live URL: 
 // (test OR ?retryWrites=true&w=majority
 var toISO, fromISO, toSec, fromSec;
 var coinPrices = [], indexPrices = [], tempArr = [], scaledCoinPrices = [], scaledIndexPrices = [];
-var returnObj = {arr1: [], arr2: [], scaledArr1: [], scaledArr2: [], coinRegLine: {}, scaledCoinRegLine: {}, indexRegLine: {}, coinEMA: [], indexEMA: [], corrCoeff: null};
+var returnObj = {arr1: [], arr2: [], scaledArr1: [], scaledArr2: [], coinRegLine: {}, scaledCoinRegLine: {}, indexRegLine: {}, coinEMA: [], indexEMA: [], lstmIndexObj: {}, corrCoeff: null};
 var errorObj = {status: null, text: ''};
+
 app.get("/data", function(req, res1){ // may need to change this url later
-    returnObj.arr1 = []; returnObj.arr2 = []; returnObj.scaledArr1 = []; returnObj.scaledArr2 = []; returnObj.coinRegLine = {}; returnObj.indexRegLine = {}; returnObj.coinEMA = []; returnObj.indexEMA = []; returnObj.corrCoeff = null;
+    console.log("new data request");
+    returnObj.arr1 = []; returnObj.arr2 = []; returnObj.scaledArr1 = []; returnObj.scaledArr2 = []; returnObj.coinRegLine = {}; returnObj.indexRegLine = {}; returnObj.coinEMA = []; returnObj.indexEMA = []; lstmIndexObj= {}; returnObj.corrCoeff = null;
     
     var selectedCrypto =req.query.selectedCrypto;// 'selectedCrypto' from the front-end
     var selectedIndex = req.query.selectedIndex; // 'sectorIndex' from the front-end
@@ -33,9 +35,10 @@ app.get("/data", function(req, res1){ // may need to change this url later
     fromISO = req.query.from;  // YYYY-MM-DD format
     fromSec = (new Date(fromISO)).getTime()/1000; // date in seconds
     toSec = (new Date(toISO)).getTime()/1000; // date in seconds
-    var lt90days = (toSec - fromSec < 7776000000);
+    var lt90days = (toSec - fromSec < 7776000);
+    var gt90days = (toSec - fromSec > 7776000);
     toSec+=50400; // increment seconds to get correct 'to' date
-    
+    //console.log(toSec - fromSec); process.exit();
     // alternative API is coinapi.io
     // access the blockchain API, process data with a callback function
     cryptoURL = 'https://api.coingecko.com/api/v3/coins/'+selectedCrypto+'/market_chart/range?vs_currency=usd&from='+fromSec+'&to='+toSec; 
@@ -44,7 +47,7 @@ app.get("/data", function(req, res1){ // may need to change this url later
     filterIndexforURL(selectedIndex);
     const indexRequest = axios.get(indexURL);
     
-    axios.all([cryptoRequest, indexRequest]).then(axios.spread((...responses) => {
+    axios.all([cryptoRequest, indexRequest]).then(axios.spread(async (...responses) => {
         const responseOne = responses[0];
         const responseTwo = responses[1];
 
@@ -109,6 +112,17 @@ app.get("/data", function(req, res1){ // may need to change this url later
         LOCF(returnObj.arr1, returnObj.arr2);
         LOCF(returnObj.scaledArr1, returnObj.scaledArr2);
 
+        /****************LSTM BEGIN*******************/
+        if(gt90days){ 
+            console.log("gt90days=true")
+            var indexPricesLSTM = []
+            for(var i=0; i < returnObj.arr2.length; i++){
+                indexPricesLSTM.push([returnObj.arr2[i][0], returnObj.arr2[i][1]]);
+            }
+            returnObj.lstmIndexObj = await lstm.lstm(indexPricesLSTM);
+        }
+        /****************LSTM END ****************/
+
         // *********** Linear Regression BEGIN ***************
         //coinPrices=Array.from(returnObj.arr1); if(typeof coinPrices[0][0] === "number") process.exit();
         var tempPricesArr=[], tempPricesArr2=[];
@@ -116,7 +130,7 @@ app.get("/data", function(req, res1){ // may need to change this url later
             tempPricesArr.push([i, returnObj.arr1[i][1]]); //populate array with 0 - n and coinPrices
             prices2.push([i, returnObj.scaledArr1[i][1]]); //populate array with 0 - n and scaledcoinPrices
             tempPricesArr2.push([i, returnObj.arr2[i][1]]);
-        } console.log(tempPricesArr); console.log(tempPricesArr2); ;
+        } //console.log(tempPricesArr); console.log(tempPricesArr2);
         
         returnObj.coinRegLine= ss.linearRegression(tempPricesArr);
         returnObj.scaledCoinRegLine = ss.linearRegression(prices2);
@@ -136,7 +150,7 @@ app.get("/data", function(req, res1){ // may need to change this url later
         // *********** calculateEMA END ***************
 
         res1.statusCode = 200;
-        console.log(returnObj)
+        console.log(returnObj.lstmIndexObj); console.log("end data request");
         res1.json(returnObj);
         //returnObj.arr1 = [], returnObj.arr2 = [], returnObj.corrCoeff = null;
     })).catch(errors => {console.log(errors);

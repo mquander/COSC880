@@ -4,6 +4,7 @@ import ema from "../images/ema.png";
 import LR from "../images/LR.png";
 import scaled from "../images/scaled.png";
 import corrCoef from "../images/corrCoef.png";
+import lstm from "../images/lstm.png";
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Container, Typography } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -41,10 +42,19 @@ function About() {
 
           
           </Box>
-          <Typography variant="h6" align="center" color="white" component="p" sx={{margin:4}}>
-            COSC 880, add info about this app, project, crypto, index ETFs, technical analysis, algorithms used, etc..
+          <Box sx={{ minWidth: 1000}}>
+          <Typography variant="h6" align="center" color="white" component="p">
+            <p>
+            As part of COSC 880 completion at Towson University, this project offers an open source tool to investigate the correlation between
+            a cryptocurrency and economic industry, specified by the user. As a web-based application, it makes calls to multiple RESTful APIs to 
+            obtain the cryptocurrency and sector index pricing data for a given time frame. It then calculates the correlation coefficient between the two, and
+            displays the time-series pricing data on a dynamic graph.</p>
+          <p>
+            Once the data is rendered, the user has the option to display the Exponential Moving Average, Normalized data, Linear Regression line, 
+            and the Long Short Term Memory prediction. Below is a brief description of the formulas and algorithms used.
+            </p>
           </Typography>
-          
+          </Box>
           <Box 
           component="img"
           sx={{
@@ -59,7 +69,7 @@ function About() {
           />
           Correlation Coefficient
           <Typography variant="h6" align="center" color="white" component="p" sx={{mb: 6}}>
-            <i>statistical measure of the strength of the relationship between the relative movements of two variables</i>
+            <i>Statistical measure of the strength of the relationship between the relative movements of two variables</i>
             </Typography>
             {/* https://www.investopedia.com/terms/c/correlationcoefficient.asp */}
           <Box 
@@ -76,7 +86,7 @@ function About() {
           />
           Exponential Moving Averge
           <Typography variant="h6" align="center" color="white" component="p" sx={{mb: 6}}>
-          <i>a type of moving average (MA) that places a greater weight and significance on the most recent data points</i>
+          <i>A type of moving average (MA) that places a greater weight and significance on the most recent data points</i>
           </Typography>
           {/* https://www.investopedia.com/terms/e/ema.asp */}
           <Box 
@@ -93,7 +103,7 @@ function About() {
           />
           Normalized
           <Typography variant="h6" align="center" color="white" component="p" sx={{mb: 6}}>
-            <i>every value is normalized to the start value, maintaining the same percentage changes as in the nonindexed series. Subsequent values are calculated so that percent changes in the indexed series are the same as in the nonindexed.</i>
+            <i>Each value is normalized to the start value, subsequent values are calculated so that percent changes in the indexed series are the same as in the nonindexed.</i>
           </Typography>
           {/* https://www.dallasfed.org/research/basics/indexing.aspx */}
           <Box 
@@ -113,6 +123,31 @@ function About() {
           <i>Linear regression establishes the linear relationship between two variables based on a line of best fit.</i>
         </Typography>
         {/* https://www.investopedia.com/terms/r/regression.asp */}
+
+        <Box 
+          component="img"
+          sx={{
+              // height: "auto",
+              // width: "auto", 
+              display: 'flex', margin:4,
+              maxHeight: { xs: 600, md: 500 },
+              maxWidth: { xs: 600, md: 500 },
+          }}
+          alt=""
+          src={lstm}
+          />
+          LSTM
+          <Typography variant="h6" align="center" color="white" component="p" sx={{mb: 6}}>
+          <i>A special kind of RNN, capable of learning long-term dependencies, designed to avoid the long-term dependency problem.</i>
+          </Typography>
+          {/* https://colah.github.io/posts/2015-08-Understanding-LSTMs/ */}
+
+          <Box sx={{ minWidth: 1000}}>
+          <Typography variant="h6" align="center" color="white" component="p">
+          <p style={{color:"red", display:"inline-block"}}> Disclaimer:</p> This application is for demonstration only and is not intended for financial advice, as cryptocurrency and financial markets are affected
+            by many variables that are not captured here.
+          </Typography>
+          </Box>
           </Box>
         </Container>
     </ThemeProvider>

@@ -196,7 +196,7 @@ export default class Home extends React.Component {
     <div className="App" >
       <header className="App-header">
         
-       <div style={{border: "1px solid white"}}><IndexComponent/></div> {/**/}
+       <div><IndexComponent/></div> {/**/}
       
       <div style={{maxWidth: "1000px"}}>Please enter a recognized cryptocurrency and one of the following sector indexes: "technology", "finance", "oil", "consumercyclicals", "healthcare","transportation", "vix", or "treasuries"</div>  &emsp;
       
@@ -295,7 +295,6 @@ export default class Home extends React.Component {
                             required
                             id="fromDateInputMUI"
                             label="From Date"
-                            autoFocus
                             value={this.state.fromDate}
                             // onChange={(newValue) => {
                             // setValue(newValue);
@@ -315,7 +314,6 @@ export default class Home extends React.Component {
                             required
                             id="toDateInputMUI"
                             label="To Date"
-                            autoFocus
                             value={this.state.toDate}
                             // onChange={(newValue) => {
                             // setValue(newValue);

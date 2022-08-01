@@ -1,6 +1,8 @@
 import '../App.css';
 import BasicComponent from '../BasicComponent';
 import React from 'react';
+import moment from 'moment';
+import isWeekend from "date-fns/isWeekend";
 import IndexComponent from '../IndexComponent';
 import GraphComponent from '../GraphComponent';
 import Watchlist from './Watchlist';
@@ -8,13 +10,13 @@ import Grid from '@mui/material/Grid';
 import Item from '@mui/material/ListItem';
 import Button from '@mui/material/Button';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-//import Typography from '@mui/material/Typography';
+import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-//import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+//import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 
 const theme = createTheme();
@@ -84,9 +86,9 @@ export default class Home extends React.Component {
         this.setState({indexInput: ''})
         alert("Please pick a valid index")
         return false;
-    }else if(!this.disableWeekendDate()){
+    /*}else if(!this.disableWeekendDate()){
         // enters here if weekend date selected
-        this.setState({viewForm: false});
+        this.setState({viewForm: false});*/
     }else if(!this.disableHolidays()){
         // enters here if holiday selected
         this.setState({viewForm: false});
@@ -183,7 +185,7 @@ export default class Home extends React.Component {
   }
 
   render(){
-    
+    moment().format("YYYY-MM-DD");
     console.log("in Home.js render: " + new Date());
     var componentRender = null//, watchlistComp = null;
     if(this.state.viewForm){
@@ -195,10 +197,13 @@ export default class Home extends React.Component {
     
     <div className="App" >
       <header className="App-header">
-        
-       <div><IndexComponent/></div> {/**/}
-      
-      <div style={{maxWidth: "1000px"}}>Please enter a recognized cryptocurrency and one of the following sector indexes: "technology", "finance", "oil", "consumercyclicals", "healthcare","transportation", "vix", or "treasuries"</div>  &emsp;
+      <Typography component="h1" variant="h4" sx={{margin: 3}}>
+      Crypto-Index App
+          </Typography>
+       <div><IndexComponent/></div>
+      {/*<div style={{maxWidth: "1000px", marginTop: 20}}> Crypto-Index App </div>  &emsp; */}
+    
+      <div style={{maxWidth: "1000px", fontSize: 20}}>Please enter a recognized cryptocurrency and one of the following sector indexes: "technology", "finance", "oil", "consumercyclicals", "healthcare","transportation", "vix", or "treasuries"</div>  &emsp;
       
         {/* put BasicComp/componentRender here, which contains GraphComp */}
         <Grid  container spacing={3}>
@@ -285,16 +290,20 @@ export default class Home extends React.Component {
                         
                     </Grid> */}
                     <Grid item xs={12} sm={6}>
-                        <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
-                            format="YYYY-MM-DD"
-                            onChange={(newValue) => {this.setState({fromDate: new Date(newValue).toISOString().slice(0, 10)})}} // display: 'inline'
+                            //format="YYYY-MM-DD" 
+                            onChange={(newValue) => {this.setState({fromDate: new Date(newValue).toISOString().slice(0, 10)}, ()=>{console.log(newValue);})}} // display: 'inline'
                             //onChange={this.fromDateChange}
-                            autoComplete=""
+                            //autoComplete=""
                             name="fromDateInputMUI"
                             required
                             id="fromDateInputMUI"
                             label="From Date"
+                            shouldDisableDate={isWeekend}
+                            views={['year', 'month', 'day']}
+                           // minDate={new Date("2021-01-02")}
+                            //maxDate={new Date()}
                             value={this.state.fromDate}
                             // onChange={(newValue) => {
                             // setValue(newValue);
@@ -305,7 +314,7 @@ export default class Home extends React.Component {
                         </LocalizationProvider>
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             format="YYYY-MM-DD"
                             onChange={(newValue) => {this.setState({toDate: new Date(newValue).toISOString().slice(0, 10)}, ()=>{this.dateValidate()}); }} //this.toDateChange display: 'inline'
@@ -314,6 +323,9 @@ export default class Home extends React.Component {
                             required
                             id="toDateInputMUI"
                             label="To Date"
+                            views={['year', 'month', 'day']}
+                            //minDate={new Date("2021-01-02")}
+                            //maxDate={new Date()}
                             value={this.state.toDate}
                             // onChange={(newValue) => {
                             // setValue(newValue);

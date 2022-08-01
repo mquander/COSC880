@@ -5,6 +5,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+//import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import DeleteIcon from '@mui/icons-material/Delete';
 //import Link from '@mui/material/Link';
 import IconButton from '@mui/material/IconButton';
@@ -15,7 +18,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useContext} from "react"; //, useEffect 
+import { useContext, useState} from "react"; //, useEffect 
 import {  useNavigate } from "react-router";
 import { UserContext } from "../App";
 import axios from "axios";
@@ -29,11 +32,12 @@ var userData;
 
 function Profile() {
   const { user, setUser} = useContext(UserContext); console.log(user) //
+  const [open, setOpen] = useState(false);
   //const { loggedInUser } = useContext(UserContext); console.log(loggedInUser)
 //   const navigate = useNavigate();
 //   const location = useLocation();
   const navigate = useNavigate();
-
+  
   function removeCrypto(x){
     //user.loggedInUserData.watchList.cryptos.splice(x,1); 
     userData.watchList.cryptos.splice(x,1); 
@@ -44,14 +48,15 @@ function Profile() {
       console.log(res)
       if(res.status < 400){
         //setUser({ loggedIn: true });
-        alert("Updated crypto watchlist ok")
+        setOpen(true);
+        //alert("Updated crypto watchlist ok")
         // const navigate = useNavigate();
         // return navigate("/", { replace: true })
       }
     }).catch(error => {
       alert("Updated crypto watchlist failed")
       console.log(error.response.data)
-      alert(error.response.data)
+      //alert(error.response.data)
     })
   }
   
@@ -65,19 +70,21 @@ function Profile() {
       console.log(res)
       if(res.status < 400){
         //setUser({ loggedIn: true });
-        alert("Updated index watchlist ok")
+        setOpen(true);
+        //alert("Updated index watchlist ok")
         // const navigate = useNavigate();
         // return navigate("/", { replace: true })
       }
     }).catch(error => {
       alert("Updated index watchlist failed")
       console.log(error.response.data)
-      alert(error.response.data)
+      //alert(error.response.data)
     })
   }
 
   function deleteProfile(){
     // display confirm notification
+    // https://mui.com/material-ui/react-dialog/  to confirm deleting account
     var confirmation = window.confirm("Confirm Account Deletion?")
     if(confirmation){
       var paramsObj = user.loggedInUserData
@@ -87,19 +94,25 @@ function Profile() {
       setUser({loggedInUserData: ''})
       setUser({loggedIn: false})
       if(res.status < 400){
-        //setUser({ loggedIn: true });
-        alert("User deleted ok")
+        
+        //alert("User deleted ok")
         // const navigate = useNavigate();
          return navigate("/", { replace: true })
       }
       }).catch(error => {
         alert("User deleted failed")
         console.log(error.response.data)
-        alert(error.response.data)
+       // alert(error.response.data)
       })
     }
     
   }
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
 //   useEffect(() => {
 //     if(user.loggedIn){
 //       userData = user.loggedInUserData;
@@ -118,7 +131,9 @@ function Profile() {
      //return  navigate("/login")
   }
   console.log(userData)
-
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -173,7 +188,7 @@ function Profile() {
                   textAlign="left"
                   margin="normal"
                   fullwidth="true">
-                   <Typography sx={{textDecoration: 'underline'}} display="inline">Cryptos: </Typography> 
+                   <Typography component={"span"} sx={{textDecoration: 'underline'}} display="inline">Cryptos: </Typography> 
                    {userData.watchList.cryptos.map((a,i) =>  //  tempArray1
                              <li key={i}> {a} <IconButton onClick={() => {removeCrypto(i);}}><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }}/></IconButton></li>
                             //<li key={i}>{a}</li>
@@ -188,7 +203,7 @@ function Profile() {
 
                 <Grid container direction="column" wrap='nowrap' item xs={'auto'} sm={6}  style={{ fontSize: '18px' }}>
 
-                <Typography sx={{border: 1, borderColor: 'primary', borderRadius: '16px', py: 2, px: 1  }}
+                <Typography  sx={{border: 1, borderColor: 'primary', borderRadius: '16px', py: 2, px: 1  }}
                   textAlign="left"
                   margin="normal"
                   fullwidth="true">
@@ -197,7 +212,7 @@ function Profile() {
                             <li key={i}>{a}</li>
                             )}   */}
                   
-                  <Typography sx={{textDecoration: 'underline'}} display="inline">Indexes: </Typography>
+                  <Typography component="span" sx={{textDecoration: 'underline'}} display="inline">Indexes: </Typography>
                   {userData.watchList.indexes.map((a,i) =>  //  tempArray1
                                 <li key={i}> {a} <IconButton onClick={() => {removeIndex(i);}}><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }}/></IconButton></li>
                                 //<li key={i}>{a}</li>
@@ -218,6 +233,11 @@ function Profile() {
           <Button variant="outlined"  color="error" sx={{mt: 4}} onClick={()=>{deleteProfile()}} startIcon={<DeleteIcon/>}>
               Delete Account
           </Button>
+          <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
+            <Alert  variant="outlined" onClose={handleClose} severity="success" sx={{ width: '100%' , color: "green"}}>
+              Successfully removed
+            </Alert>
+          </Snackbar>
           <Box sx={{marginBottom: 8}}></Box>
         </Box>
       </Container>
@@ -225,4 +245,33 @@ function Profile() {
   );
 }
 
+
+// function CustomizedSnackbars() {
+//   const [open, setOpen] = React.useState(false);
+
+//   const handleClick = () => {
+//     setOpen(true);
+//   };
+
+//   const handleClose = (event, reason) => {
+//     if (reason === 'clickaway') {
+//       return;
+//     }
+
+//     setOpen(false);
+//   };
+
+//   return (
+//     <Stack spacing={2} sx={{ width: '100%' }}>
+//       <Button variant="outlined" onClick={handleClick}>
+//         Open success snackbar
+//       </Button>
+//       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+//         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+//           This is a success message!
+//         </Alert>
+//       </Snackbar>
+//     </Stack>
+//   );
+// }
 export default Profile;

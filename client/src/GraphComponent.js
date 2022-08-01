@@ -207,6 +207,28 @@ export default class GraphComponent extends React.Component{
               options.charts[0].data[1].legendText= "Predicted (training set)";
               options.charts[0].data[2].legendText= "Predicted (test set)";
             }
+            else if(this.props.display === 'displayCryptoLSTM'){
+              //var j;
+              for( i=0; i < this.props.cryptoLSTM.timestamps_a.length; i++){ //raw data line
+                options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoLSTM.timestamps_a[i]), y: this.props.cryptoLSTM.prices[i]});
+              }
+              for( i=0; i < this.props.cryptoLSTM.timestamps_b.length; i++){ //val train y data line
+                //options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexLSTM.timestamps_b[i]), }) // for SMA
+                if(i % 2 === 0){
+                  options.charts[0].data[1].dataPoints.push({x: new Date(this.props.cryptoLSTM.timestamps_b[i]), y: this.props.cryptoLSTM.val_train_y[i/2]})// for Val_train_Y
+                }
+              }
+              var timestamps_c2 = this.props.cryptoLSTM.timestamps_c.slice(this.props.cryptoLSTM.timestamps_c.length - this.props.cryptoLSTM.val_unseen_y.length, this.props.cryptoLSTM.timestamps_c.length - 1)
+              for( i=0; i < timestamps_c2.length; i++){
+                //if(i % 2 === 0){
+                options.charts[0].data[2].dataPoints.push({x: new Date(timestamps_c2[i]), y: this.props.cryptoLSTM.val_unseen_y[i]}) // for Val_unseen_Y
+
+                //}
+              }
+              options.charts[0].data[0].legendText= this.props.cryptoToSearch;
+              options.charts[0].data[1].legendText= "Predicted (training set)";
+              options.charts[0].data[2].legendText= "Predicted (test set)";
+            }
             // for(var i=0; i < this.props.cryptoArray.length; i++){ //populate the chart
             //     options.charts[0].data[0].dataPoints.push({x: new Date(this.props.cryptoArray[i][0]), y: this.props.cryptoArray[i][1]}); 
             //     options.charts[0].data[1].dataPoints.push({x: new Date(this.props.indexArray[i][0]), y: this.props.indexArray[i][1]})

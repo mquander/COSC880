@@ -120,11 +120,11 @@ export default class Watchlist extends React.Component {
                         
                         {userData.watchList.cryptos.map((a,i) => 
                                 // <li key={i}><Link component="button" onClick={() => {this.props.updateCryptoInput(a)}}>{a}</Link><IconButton><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }} /></IconButton></li>
-                            <ListItem disablePadding >
-                                <ListItemButton sx={{border: 1, borderColor: 'primary', borderRadius: '16px', background: 'linear-gradient(to right bottom, #282c34, #282c34, #00695c)'}}>
+                            <ListItem key={i} disablePadding >
+                                <ListItemButton key={i} sx={{border: 1, borderColor: 'primary', borderRadius: '16px', background: 'linear-gradient(to right bottom, #282c34, #282c34, #00695c)'}}>
                             {/*<ListItemIcon>
                                 </ListItemIcon>*/}
-                                <ListItemText primary={a} /> 
+                                <ListItemText key={i} primary={a} /> 
                                 </ListItemButton>
                             </ListItem>
 
@@ -142,10 +142,10 @@ export default class Watchlist extends React.Component {
                                 </ListItemIcon>*/}
                         {userData.watchList.indexes.map((a,i) =>  //  tempArray1
                                 // <li key={i}><Link component="button" onClick={() => {this.props.updateCryptoInput(a)}}>{a}</Link><IconButton><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }} /></IconButton></li>
-                            <ListItem disablePadding>
-                                <ListItemButton sx={{border: 1, borderColor: 'primary', borderRadius: '16px', background: 'linear-gradient(to right bottom, #282c34, #282c34, #00695c)' }}>
+                            <ListItem key={i} disablePadding>
+                                <ListItemButton key={i} sx={{border: 1, borderColor: 'primary', borderRadius: '16px', background: 'linear-gradient(to right bottom, #282c34, #282c34, #00695c)' }}>
 
-                                <ListItemText primary={a} /> 
+                                <ListItemText key={i} primary={a} /> 
                                 
                                 </ListItemButton>
                         </ListItem>

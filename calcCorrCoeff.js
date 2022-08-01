@@ -1,3 +1,4 @@
+// borrowed from: https://www.geeksforgeeks.org/program-find-correlation-coefficient/
 function correlationCoefficient(X2d, Y2d, n){
     var X = [], Y = [];
     for(var i = 0; i < X2d.length; i++){

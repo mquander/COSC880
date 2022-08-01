@@ -52,6 +52,7 @@ async function trainModel(inputs, outputs, trainingsize, window_size, n_epochs, 
     //old way
     // const xs = tf.tensor2d(X, [X.length, X[0].length]).div(tf.scalar(10));
     // const ys = tf.tensor2d(Y, [Y.length, 1]).reshape([Y.length, 1]).div(tf.scalar(10));
+    console.log(X)
     const inputTensor = tf.tensor2d(X, [X.length, X[0].length])
     const labelTensor = tf.tensor2d(Y, [Y.length, 1]).reshape([Y.length, 1])
 
@@ -124,7 +125,7 @@ async function lstm(inputArray){
     var trainingsize = 70
     inputs = inputs.slice(0, Math.floor(trainingsize / 100 * inputs.length)); 
     outputs = outputs.slice(0, Math.floor(trainingsize / 100 * outputs.length)); //console.log(outputs);  process.exit()
-    var n_epochs = 10, window_size = inputArray.length/4, learningrate = 0.01, n_hiddenlayers=4;
+    var n_epochs = 50, window_size = inputArray.length/4, learningrate = 0.01, n_hiddenlayers=4;
 
 
     var result = await trainModel(inputs, outputs, trainingsize, window_size, n_epochs, learningrate, n_hiddenlayers);

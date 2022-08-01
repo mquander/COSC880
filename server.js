@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 const PORT = process.env.PORT || 5000;
 
 var indexURL, cryptoURL;
-var mongoURL = "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test"; // "mongodb://localhost:27017" 
+var mongoURL = "mongodb+srv://mquander:"+process.env.mongoPW+"@cosc880cluster.6w14h3k.mongodb.net/test"; //  "mongodb://localhost:27017"
 //live URL: 
 // (test OR ?retryWrites=true&w=majority
 var toISO, fromISO, toSec, fromSec;
@@ -113,14 +113,14 @@ app.get("/data", function(req, res1){ // may need to change this url later
         LOCF(returnObj.scaledArr1, returnObj.scaledArr2);
 
         /****************LSTM BEGIN*******************/
-        if(gt90days){ 
+        /*if(gt90days){ 
             console.log("gt90days=true")
             var indexPricesLSTM = []
             for(var i=0; i < returnObj.arr2.length; i++){
                 indexPricesLSTM.push([returnObj.arr2[i][0], returnObj.arr2[i][1]]);
             }
             returnObj.lstmIndexObj = await lstm.lstm(indexPricesLSTM);
-        }
+        }*/
         /****************LSTM END ****************/
 
         // *********** Linear Regression BEGIN ***************
@@ -144,13 +144,15 @@ app.get("/data", function(req, res1){ // may need to change this url later
         // *********** corr Coef END ***************
 
         // *********** calculateEMA BEGIN ***************
+        var ema_time_period;
+        (tempPricesArr.length > 90)? ema_time_period = 50 : ema_time_period = 8;
         const calculateEMA = exportObjects.calculateEMA;
-        returnObj.coinEMA = calculateEMA(tempPricesArr, tempPricesArr.length); // a 1D array that represents EMA line
-        returnObj.indexEMA = calculateEMA(tempPricesArr2, tempPricesArr2.length)
+        returnObj.coinEMA = calculateEMA(tempPricesArr, ema_time_period); //tempPricesArr.length a 1D array that represents EMA line
+        returnObj.indexEMA = calculateEMA(tempPricesArr2, ema_time_period) // tempPricesArr2.length
         // *********** calculateEMA END ***************
 
         res1.statusCode = 200;
-        console.log(returnObj.lstmIndexObj); console.log("end data request");
+        console.log("end data request");
         res1.json(returnObj);
         //returnObj.arr1 = [], returnObj.arr2 = [], returnObj.corrCoeff = null;
     })).catch(errors => {console.log(errors);
@@ -181,12 +183,57 @@ app.get("/data", function(req, res1){ // may need to change this url later
         
         });
 });
+// route to get index LSTM
+app.get("/indexlstm", async function(req, res){
+    console.log("begin index lstm request");
+    var indexDates = [], indexPrices = [], inputToLSTM = []
+    var lstmReturnObj = {}; 
+    
+    req.query.dates.forEach(a => {
+        indexDates.push(a)
+    })
+    req.query.prices.forEach(a => {
+        indexPrices.push(Number(a))
+    })
+    // console.log(cryptoDates); console.log(cryptoPrices);
 
-// route to get LSTM
-// app.get("/lstm", function(req, res){
+    for(var i=0; i < indexPrices.length; i++){
+        inputToLSTM.push([indexDates[i],indexPrices[i]]);
+    }
+    //console.log(inputToLSTM); process.exit()
+    lstmReturnObj = await lstm.lstm(inputToLSTM);
 
-//     // call lstm
-// })
+    res.statusCode = 200;
+    console.log(lstmReturnObj); console.log("end index lstm request");
+    res.json(lstmReturnObj);
+    // call lstm
+})
+
+// route to get crypto LSTM
+app.get("/cryptolstm", async function(req, res){
+    console.log("begin lstm request");
+    var cryptoDates = [], cryptoPrices = [], inputToLSTM = []
+    var lstmReturnObj = {}; 
+    
+    req.query.dates.forEach(a => {
+        cryptoDates.push(a)
+    })
+    req.query.prices.forEach(a => {
+        cryptoPrices.push(Number(a))
+    })
+    // console.log(cryptoDates); console.log(cryptoPrices);
+
+    for(var i=0; i < cryptoPrices.length; i++){
+        inputToLSTM.push([cryptoDates[i],cryptoPrices[i]]);
+    }
+    //console.log(inputToLSTM); process.exit()
+    lstmReturnObj = await lstm.lstm(inputToLSTM);
+
+    res.statusCode = 200;
+    console.log(lstmReturnObj); console.log("end lstm request");
+    res.json(lstmReturnObj);
+    // call lstm
+})
 
 // server code for user login
 app.post("/login", function(req, res){

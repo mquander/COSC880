@@ -302,9 +302,9 @@ export default class Home extends React.Component {
                             label="From Date"
                             shouldDisableDate={isWeekend}
                             views={['year', 'month', 'day']}
-                           // minDate={new Date("2021-01-02")}
-                            //maxDate={new Date()}
-                            value={this.state.fromDate}
+                            minDate={new Date("2021-01-02")}
+                            maxDate={new Date()}
+                            value={moment(this.state.fromDate)}
                             // onChange={(newValue) => {
                             // setValue(newValue);
                             // }}
@@ -316,7 +316,7 @@ export default class Home extends React.Component {
                     <Grid item xs={12} sm={6}>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
-                            format="YYYY-MM-DD"
+                            format={moment().format("YYYY-MM-DD")}
                             onChange={(newValue) => {this.setState({toDate: new Date(newValue).toISOString().slice(0, 10)}, ()=>{this.dateValidate()}); }} //this.toDateChange display: 'inline'
                             autoComplete=""
                             name="toDateInputMUI"
@@ -324,9 +324,9 @@ export default class Home extends React.Component {
                             id="toDateInputMUI"
                             label="To Date"
                             views={['year', 'month', 'day']}
-                            //minDate={new Date("2021-01-02")}
-                            //maxDate={new Date()}
-                            value={this.state.toDate}
+                            minDate={new Date(moment(this.state.fromDate))}
+                            maxDate={new Date()}
+                            value={moment(this.state.toDate)}
                             // onChange={(newValue) => {
                             // setValue(newValue);
                             // }}

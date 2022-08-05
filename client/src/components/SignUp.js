@@ -72,7 +72,7 @@ function SignUp() {
       console.log(res)
       if(res.status < 400){
         //setUser({ loggedIn: true });
-        console.log(user);
+        //console.log(user);
         alert("Successfully created account")
         return navigate("/login", { replace: true })// (<Navigate to="/login" replace  />);
       }

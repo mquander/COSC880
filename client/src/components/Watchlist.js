@@ -54,7 +54,7 @@ export default class Watchlist extends React.Component {
         //var tempArray2 = ["sp500", "dow", "nasdaq", "vix", "uso", "finance", "tech", "healthcare"]
         var userData;//  = { "_id" : "62d7024b42e5546a1ef500d6", "user_ID" : "230", "fname" : "johanna", "lname" : "squires", "email" : "jts@yahoo.com", "password" : "1234", "watchList" : { "cryptos" : tempArray1, "indexes" : tempArray2 } };  
         //console.log(this.state.currentContext)
-        console.log(this.context)
+        //console.log(this.context)
         if((typeof this.context.user) === "undefined"){
             // do nothing 
             return;
@@ -68,7 +68,7 @@ export default class Watchlist extends React.Component {
         }else if(this.context.user.loggedIn){ console.log(this.context);
             userData = this.context.user.loggedInUserData;//{ "_id" : "62d7024b42e5546a1ef500d6", "user_ID" : "230", "fname" : "johanna", "lname" : "squires", "email" : "jts@yahoo.com", "password" : "1234", "watchList" : { "cryptos" : tempArray1, "indexes" : tempArray2 } }
         }
-    console.log(userData)
+    //console.log(userData)
        return (
         <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="md">

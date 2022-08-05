@@ -26,7 +26,7 @@ export default class BasicComponent extends React.Component {
     toDate = this.props.arg4;
     console.log("in BasicComp componentDidMount " + new Date());
     // GET request to the URL and set state to the data returned, "/data"; http://localhost:5000
-    axios.get("/data", {params:{selectedCrypto: cryptoToSearch, selectedIndex: indexToSearch, from: fromDate, to: toDate}}).then(res => {
+    axios.post("/data", {}, {params:{selectedCrypto: cryptoToSearch, selectedIndex: indexToSearch, from: fromDate, to: toDate}}).then(res => {
 
       if(res.status === 200){ 
         const returnData = res.data;
@@ -36,7 +36,7 @@ export default class BasicComponent extends React.Component {
         this.setState({scaledArr1: returnData.scaledArr1});
         this.setState({scaledArr2: returnData.scaledArr2});
         this.setState({corrCoef: returnData.corrCoeff})
-        console.log(returnData);
+        //console.log(returnData);
       }else{
         const errorReturn = res.data;
         this.setState({errorReturn: errorReturn});
@@ -66,10 +66,10 @@ export default class BasicComponent extends React.Component {
       email : this.context.user.loggedInUserData.email,
       password : this.context.user.loggedInUserData.password,
       watchList: {"cryptos": this.context.user.loggedInUserData.watchList.cryptos, "indexes": this.context.user.loggedInUserData.watchList.indexes}
-    }; console.log(paramsObj);
+    }; //console.log(paramsObj);
     axios.post("/update", {}, {params: paramsObj}).then(res => {
       console.log("watchlist updated (from BasicComp): ")
-      console.log(res)
+      //console.log(res)
       if(res.status < 400){
         //setUser({ loggedIn: true });
         alert("Updated ok")
@@ -93,8 +93,8 @@ export default class BasicComponent extends React.Component {
       paramsObj.dates.push(element[0]);
       paramsObj.prices.push(element[1]);
     })
-    console.log(paramsObj)
-    axios.get("/cryptolstm", {params: paramsObj}).then(res => {
+    //console.log(paramsObj)
+    axios.post("/cryptolstm", {params: paramsObj}).then(res => { // axios({method: "post", url: "/cryptolstm", params: paramsObj}).then(res => {
       if(res.status === 200){ 
         const lstmCryptoData = res.data;
         this.setState({lstmCryptoData: lstmCryptoData});
@@ -104,8 +104,8 @@ export default class BasicComponent extends React.Component {
         this.setState({errorReturn: errorReturn});
         console.log(errorReturn);
       }
-    }).catch(error => {
-      if(error.response.data.status >= 400){
+    }).catch(error => {console.log(error);
+      if(error.response.status >= 400){
         const errorReturn = error.response;
         this.setState({errorReturn: errorReturn});
         console.log("in catch"); console.log(errorReturn);
@@ -123,8 +123,8 @@ export default class BasicComponent extends React.Component {
       paramsObj.dates.push(element[0]);
       paramsObj.prices.push(element[1]);
     })
-    console.log(paramsObj)
-    axios.get("/indexlstm", {params: paramsObj}).then(res => {
+    //console.log(paramsObj)
+    axios.post("/indexlstm", {params: paramsObj}).then(res => {
       if(res.status === 200){ 
         const lstmIndexData = res.data;
         this.setState({lstmIndexData: lstmIndexData});
@@ -135,7 +135,7 @@ export default class BasicComponent extends React.Component {
         console.log(errorReturn);
       }
     }).catch(error => {
-      if(error.response.data.status >= 400){
+      if(error.response.status >= 400){
         const errorReturn = error.response;
         this.setState({errorReturn: errorReturn});
         console.log("in catch"); console.log(errorReturn);
@@ -185,7 +185,7 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent cryptoArray={this.state.tempArray1} indexArray={this.state.tempArray2} cryptoToSearch={cryptoToSearch} indexToSearch={indexToSearch} display={this.state.display}/></div>
               &emsp; Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef.toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
               {buttonsRender}
               {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
@@ -203,7 +203,7 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent cryptoArray={this.state.scaledArr1} indexArray={this.state.scaledArr2} cryptoToSearch={cryptoToSearch} indexToSearch={indexToSearch} display={this.state.display}/></div>
               &emsp; Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
               {buttonsRender}
               {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
@@ -218,7 +218,7 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent cryptoArray={this.state.tempArray1} coinRegLine={this.state.returnData.coinRegLine} cryptoToSearch={cryptoToSearch} indexToSearch={indexToSearch}  display={this.state.display}/></div>
               &emsp; Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
               {buttonsRender}
               {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
@@ -233,7 +233,7 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent indexArray={this.state.tempArray2} indexRegLine={this.state.returnData.indexRegLine}  cryptoToSearch={cryptoToSearch} indexToSearch={indexToSearch} display={this.state.display}/></div>
               &emsp; Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
               {buttonsRender}
               {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
@@ -248,7 +248,7 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent cryptoArray={this.state.tempArray1} coinEMA={this.state.returnData.coinEMA}  cryptoToSearch={cryptoToSearch} indexToSearch={indexToSearch} display={this.state.display}/></div>
               &emsp; Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>}
               {buttonsRender}
               {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
@@ -263,7 +263,7 @@ export default class BasicComponent extends React.Component {
             <div>
               <div ><GraphComponent indexArray={this.state.tempArray2} indexEMA={this.state.returnData.indexEMA}  cryptoToSearch={cryptoToSearch} indexToSearch={indexToSearch} display={this.state.display}/></div>
               &emsp; Correlation Coefficient: {/*this.state.corrCoef?(this.state.corrCoef>0?this.state.corrCoef:this.state.corrCoef):<img src={gif} alt="" width="130px" height="50px"></img>*/} 
-              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
+              {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
               {buttonsRender}
               {/* <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={() => {this.setState({displayRaw: false, displayScaled: true, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayScaled"})}}> View Scaled </Button>
               <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={()=> {this.setState({displayRaw: true, displayScaled: false, displayCryptoLR: false, displayIndexLR: false, displayCryptoEMA: false, displayIndexEMA: false, display: "displayRaw"})}}> View Raw </Button>
@@ -277,7 +277,7 @@ export default class BasicComponent extends React.Component {
           return(
             <div>
               <div ><GraphComponent indexLSTM={this.state.lstmIndexData} indexToSearch={indexToSearch} display={this.state.display}/></div>
-              &emsp; Correlation Coefficient: {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
+              &emsp; Correlation Coefficient: {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
               {buttonsRender}
             </div>
           )
@@ -285,7 +285,7 @@ export default class BasicComponent extends React.Component {
           return(
             <div>
               <div ><GraphComponent cryptoLSTM={this.state.lstmCryptoData} cryptoToSearch={cryptoToSearch} display={this.state.display}/></div>
-              &emsp; Correlation Coefficient: {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{(this.state.corrCoef).toFixed(4)}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
+              &emsp; Correlation Coefficient: {this.state.corrCoef?(this.state.corrCoef>0?<p style={{color:"green", display:"inline-block"}}>{this.state.corrCoef}</p>: <p style={{color:"red", display:"inline-block"}}>{this.state.corrCoef}</p>):<img src={gif} alt="" width="110px" height="40px"></img>} 
               {buttonsRender}
             </div>
           )

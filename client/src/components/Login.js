@@ -69,13 +69,13 @@ function Login() {
       //   return;
       // } 
       console.log("user.loggedIn: "+user.loggedIn)
-      console.log(res.data);
+      //console.log(res.data);
       if(res.data.email === paramsObj.email){
         setUser({ loggedIn: true, loggedInUserData: res.data });
         //setLoggedInUser({loggedInUserData: res.data})
         
 
-        console.log(user);
+        //console.log(user);
         return navigate("/", { replace: true })
       }else{
         setUser({ loggedIn: false });

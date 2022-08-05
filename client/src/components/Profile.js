@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-//import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -45,7 +45,7 @@ function Profile() {
     var paramsObj = user.loggedInUserData
     axios.post("/update", {}, {params: paramsObj}).then(res => {
       console.log("watchlist updated (from Profile): ")
-      console.log(res)
+      //console.log(res)
       if(res.status < 400){
         //setUser({ loggedIn: true });
         setOpen(true);
@@ -67,7 +67,7 @@ function Profile() {
 
     axios.post("/update", {}, {params: paramsObj}).then(res => {
       console.log("watchlist updated (from Profile): ")
-      console.log(res)
+      //console.log(res)
       if(res.status < 400){
         //setUser({ loggedIn: true });
         setOpen(true);
@@ -90,7 +90,7 @@ function Profile() {
       var paramsObj = user.loggedInUserData
       axios.post("/delete", {}, {params: paramsObj}).then(res => {
       console.log("user "+user.loggedInUserData.fname+" deleted (from Profile): ")
-      console.log(res)
+      //console.log(res)
       setUser({loggedInUserData: ''})
       setUser({loggedIn: false})
       if(res.status < 400){
@@ -130,7 +130,7 @@ function Profile() {
     console.log("in loggedIn==false Profile")
      //return  navigate("/login")
   }
-  console.log(userData)
+  //console.log(userData)
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
@@ -140,7 +140,7 @@ function Profile() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 16,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -190,7 +190,7 @@ function Profile() {
                   fullwidth="true">
                    <Typography component={"span"} sx={{textDecoration: 'underline'}} display="inline">Cryptos: </Typography> 
                    {userData.watchList.cryptos.map((a,i) =>  //  tempArray1
-                             <li key={i}> {a} <IconButton onClick={() => {removeCrypto(i);}}><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }}/></IconButton></li>
+                             <li key={i}> {a} <Tooltip title="Delete item"><IconButton onClick={() => {removeCrypto(i);}}><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }}/></IconButton></Tooltip></li>
                             //<li key={i}>{a}</li>
                             )}  
                   
@@ -214,7 +214,7 @@ function Profile() {
                   
                   <Typography component="span" sx={{textDecoration: 'underline'}} display="inline">Indexes: </Typography>
                   {userData.watchList.indexes.map((a,i) =>  //  tempArray1
-                                <li key={i}> {a} <IconButton onClick={() => {removeIndex(i);}}><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }}/></IconButton></li>
+                                <li key={i}> {a} <Tooltip title="Delete item"><IconButton onClick={() => {removeIndex(i);}}><RemoveCircleOutlineIcon size="small" sx={{ color: 'red' }}/></IconButton></Tooltip></li>
                                 //<li key={i}>{a}</li>
                             )}                          
                 </Typography>

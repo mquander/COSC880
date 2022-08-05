@@ -9,6 +9,8 @@ const axios = require('axios');
 const cors = require('cors');
 app.use(cors());
 require('dotenv').config()
+app.use(express.json()) // for parsing application/json
+app.use(express.urlencoded({ extended: true }))
 
 // below 2 lines for deployment
 const path = require("path") 
@@ -25,7 +27,7 @@ var coinPrices = [], indexPrices = [], tempArr = [], scaledCoinPrices = [], scal
 var returnObj = {arr1: [], arr2: [], scaledArr1: [], scaledArr2: [], coinRegLine: {}, scaledCoinRegLine: {}, indexRegLine: {}, coinEMA: [], indexEMA: [], lstmIndexObj: {}, corrCoeff: null};
 var errorObj = {status: null, text: ''};
 
-app.get("/data", function(req, res1){ // may need to change this url later
+app.post("/data", function(req, res1){ // may need to change this url later
     console.log("new data request");
     returnObj.arr1 = []; returnObj.arr2 = []; returnObj.scaledArr1 = []; returnObj.scaledArr2 = []; returnObj.coinRegLine = {}; returnObj.indexRegLine = {}; returnObj.coinEMA = []; returnObj.indexEMA = []; lstmIndexObj= {}; returnObj.corrCoeff = null;
     
@@ -140,7 +142,9 @@ app.get("/data", function(req, res1){ // may need to change this url later
 
         // *********** corr Coef BEGIN ***************
         const correlationCoefficient = exportObjects.correlationCoefficient;
-        returnObj.corrCoeff = correlationCoefficient(returnObj.arr1, returnObj.arr2, returnObj.arr1.length);
+        var tempCorrCoeff = correlationCoefficient(returnObj.arr1, returnObj.arr2, returnObj.arr1.length);
+        returnObj.corrCoeff = tempCorrCoeff.toFixed(4);
+        tempCorrCoeff = null;
         // *********** corr Coef END ***************
 
         // *********** calculateEMA BEGIN ***************
@@ -184,15 +188,15 @@ app.get("/data", function(req, res1){ // may need to change this url later
         });
 });
 // route to get index LSTM
-app.get("/indexlstm", async function(req, res){
+app.post("/indexlstm", async function(req, res){
     console.log("begin index lstm request");
     var indexDates = [], indexPrices = [], inputToLSTM = []
     var lstmReturnObj = {}; 
     
-    req.query.dates.forEach(a => {
+    req.body.params.dates.forEach(a => {
         indexDates.push(a)
     })
-    req.query.prices.forEach(a => {
+    req.body.params.prices.forEach(a => {
         indexPrices.push(Number(a))
     })
     // console.log(cryptoDates); console.log(cryptoPrices);
@@ -204,21 +208,21 @@ app.get("/indexlstm", async function(req, res){
     lstmReturnObj = await lstm.lstm(inputToLSTM);
 
     res.statusCode = 200;
-    console.log(lstmReturnObj); console.log("end index lstm request");
+    console.log("end index lstm request");
     res.json(lstmReturnObj);
     // call lstm
 })
 
 // route to get crypto LSTM
-app.get("/cryptolstm", async function(req, res){
+app.post("/cryptolstm", async function(req, res){
     console.log("begin lstm request");
     var cryptoDates = [], cryptoPrices = [], inputToLSTM = []
     var lstmReturnObj = {}; 
     
-    req.query.dates.forEach(a => {
+    req.body.params.dates.forEach(a => {
         cryptoDates.push(a)
     })
-    req.query.prices.forEach(a => {
+    req.body.params.prices.forEach(a => {
         cryptoPrices.push(Number(a))
     })
     // console.log(cryptoDates); console.log(cryptoPrices);
@@ -230,7 +234,7 @@ app.get("/cryptolstm", async function(req, res){
     lstmReturnObj = await lstm.lstm(inputToLSTM);
 
     res.statusCode = 200;
-    console.log(lstmReturnObj); console.log("end lstm request");
+    console.log("end lstm request");
     res.json(lstmReturnObj);
     // call lstm
 })
@@ -238,7 +242,7 @@ app.get("/cryptolstm", async function(req, res){
 // server code for user login
 app.post("/login", function(req, res){
 
-    console.log(req.query)
+    //console.log(req.query)
     const userObjInfo = { 
         "email" : req.query.email,
         "password" : req.query.password
@@ -263,7 +267,7 @@ app.post("/signup", function(req, res){
     if(req.query.password1 != req.query.password2)
         res.send("Error: invalid credentials")
 
-    console.log(req.query)
+    //console.log(req.query)
     const userObjInfo = {
         "user_ID" : (Math.floor(Math.random() * 200) + 100).toString(), 
         "fname" : req.query.firstName, 
@@ -331,7 +335,7 @@ app.post("/update", function(req, res){
 // server code for deleting user
 app.post("/delete", function(req, res){
     console.log("in server /delete")
-    console.log(req.query)
+    //console.log(req.query)
     const userObjInfo = { 
         "user_ID" : req.query.user_ID, 
         "fname" : req.query.firstName, 

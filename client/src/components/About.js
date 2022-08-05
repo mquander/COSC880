@@ -6,6 +6,7 @@ import scaled from "../images/scaled.png";
 import corrCoef from "../images/corrCoef.png";
 import lstm from "../images/lstm.png";
 import locf from "../images/locf.png";
+import Link from '@mui/material/Link';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Container, Typography } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -45,8 +46,20 @@ function About() {
           <Box sx={{ minWidth: 1000}}>
             <Typography variant="h6" align="center" color="white"  component="span">
               <p>
+              
+              
+              
+              
+              
+              
+              
               As part of COSC 880 completion at Towson University, this project offers an open source tool to investigate the correlation between
-              a cryptocurrency and economic industry. It makes calls to multiple RESTful APIs to 
+              a cryptocurrency and economic industry. These include <Link rel="noopener noreferrer" href="https://finance.yahoo.com/quote/QQQ/" target="_blank">technology stocks</Link>, 
+              <Link rel="noopener noreferrer" href="https://finance.yahoo.com/quote/XLF/" target="_blank"> financial stocks</Link>, <Link rel="noopener noreferrer" href="https://finance.yahoo.com/quote/VCR/" target="_blank"> consumer cyclicals</Link>, 
+              <Link rel="noopener noreferrer" href="https://finance.yahoo.com/quote/XLV/" target="_blank"> healthcare stocks</Link> , <Link rel="noopener noreferrer" href="https://finance.yahoo.com/quote/IYT/" target="_blank"> transportation stocks</Link>, 
+              the <Link rel="noopener noreferrer" href="https://finance.yahoo.com/quote/VIXY/" target="_blank"> volatility index</Link>, <Link rel="noopener noreferrer" href="https://finance.yahoo.com/quote/TLT/" target="_blank"> US Treasuries</Link>, 
+              and the OPEC <Link rel="noopener noreferrer" href="https://data.nasdaq.com/api/v3/datasets/OPEC/ORB" target="_blank">oil price</Link>.
+              It makes calls to multiple APIs to 
               obtain the cryptocurrency and sector index pricing data, and calculates the correlation coefficient between the two.</p>
               <p>
               Once the data is rendered, the user has the option to display the Exponential Moving Average, Normalized data, Linear Regression line, 

@@ -1,3 +1,5 @@
+// borrowed code from: https://towardsdatascience.com/time-series-forecasting-with-tensorflow-js-1efd48ff2201 &
+// https://github.com/jinglescode/time-series-forecasting-tensorflowjs
 const tf = require('@tensorflow/tfjs-node');
 
 function normalizeTensorFit(tensor) {
